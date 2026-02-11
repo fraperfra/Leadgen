@@ -580,6 +580,7 @@ function Step7({ formData, update }: { formData: FormData, update: (u: Partial<F
 function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: FormData, update: (u: Partial<FormData>) => void, trackEvent: (id: string, value?: any) => void, onSuccess: () => void }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   // Track page view for final step
   React.useEffect(() => {
@@ -592,6 +593,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMsg('');
 
     // HubSpot Tracking: Submit event
     trackEvent('valutazione_richiesta', Number(formData.surface) || 0);
@@ -767,7 +769,6 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
     console.log("📤 Sending email payload:", JSON.stringify(emailPayload, null, 2));
 
     try {
-      // Call local Vercel Serverless Function
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
@@ -776,21 +777,26 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
         body: JSON.stringify(emailPayload),
       });
 
+      const rawText = await response.text();
+      console.log("📡 Response status:", response.status, "body:", rawText);
+
       if (!response.ok) {
-        throw new Error(`Email API error: ${response.status}`);
+        let detail = `HTTP ${response.status}`;
+        try {
+          const parsed = JSON.parse(rawText);
+          detail = parsed.message || parsed.error || parsed.statusCode || detail;
+        } catch { /* non-JSON response */ }
+        throw new Error(String(detail));
       }
 
       console.log("✅ Email sent successfully!");
       setLoading(false);
       setSuccess(true);
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Error sending email:", error);
-
-      // Still show success to user so they don't retry endlessly
       setLoading(false);
-      setSuccess(true);
-      onSuccess();
+      setErrorMsg(`Errore: ${error.message || 'Problema di connessione. Riprova.'}`);
     }
   };
 
@@ -938,6 +944,12 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#e3a692]/50 outline-none"
             />
           </div>
+
+          {errorMsg && (
+            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm text-center">
+              {errorMsg}
+            </div>
+          )}
 
           <button
             type="submit"

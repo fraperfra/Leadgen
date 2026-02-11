@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Search, Home, Check, MapPin, Loader2, Users, TrendingUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, Home, Check, MapPin, Loader2, Users, TrendingUp, Download } from 'lucide-react';
 import { FormData, PropertyType, EnergyClass, Condition, Motivation } from './types';
 import { PROPERTY_TYPES, ENERGY_CLASSES, CONDITION_OPTIONS, MOTIVATION_OPTIONS } from './constants';
 
@@ -17,6 +17,7 @@ declare global {
 
 export default function App() {
   const [step, setStep] = useState(1);
+  const [isSuccess, setIsSuccess] = useState(false);
   const totalSteps = 6;
 
   // Helper to track events
@@ -67,11 +68,17 @@ export default function App() {
   });
 
   const nextStep = useCallback(() => {
-    if (step <= totalSteps) setStep(prev => prev + 1);
-  }, [step]);
+    if (step < totalSteps + 1) {
+      setStep(prev => prev + 1);
+      window.scrollTo(0, 0);
+    }
+  }, [step, totalSteps]);
 
   const prevStep = useCallback(() => {
-    if (step > 1) setStep(prev => prev - 1);
+    if (step > 1) {
+      setStep(prev => prev - 1);
+      window.scrollTo(0, 0);
+    }
   }, [step]);
 
   const updateFormData = (updates: Partial<FormData>) => {
@@ -80,7 +87,7 @@ export default function App() {
 
   const isStepValid = () => {
     switch (step) {
-      case 1: return formData.address.length > 5 && formData.propertyType !== null;
+      case 1: return !!formData.address && !!formData.propertyType;
       case 2: return formData.surface !== '' && formData.rooms !== '' && formData.bathrooms !== '';
       case 3: return formData.floor !== '';
       case 4: return (formData.constructionYear !== '' || formData.constructionYearUnknown) && formData.energyClass !== null && formData.heatingType !== '';
@@ -98,7 +105,7 @@ export default function App() {
       case 4: return <Step5 formData={formData} update={updateFormData} />;
       case 5: return <Step6 formData={formData} update={updateFormData} />;
       case 6: return <Step7 formData={formData} update={updateFormData} />;
-      case 7: return <StepFinal formData={formData} update={updateFormData} />;
+      case 7: return <StepFinal formData={formData} update={updateFormData} trackEvent={trackEvent} onSuccess={() => setIsSuccess(true)} />;
       default: return null;
     }
   };
@@ -106,7 +113,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white flex flex-col max-w-lg mx-auto relative shadow-xl overflow-hidden">
       {/* Header */}
-      <header className="pt-8 pb-4 flex flex-col items-center border-b border-gray-50">
+      <header className="pt-4 pb-4 flex flex-col items-center border-b border-gray-50">
         <div className="mb-6">
           <img src="/assets/Logo Diba Nero.png" alt="Logo Diba" className="h-16 w-auto object-contain" />
         </div>
@@ -147,12 +154,12 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 px-6 pt-10 pb-32 overflow-y-auto">
+      <main className="flex-1 px-6 pt-6 pb-32 overflow-y-auto">
         {renderStep()}
       </main>
 
       {/* Navigation Footer */}
-      {step <= totalSteps + 1 && (
+      {!isSuccess && step <= totalSteps + 1 && (
         <footer className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg bg-white border-t border-gray-100 p-6 flex gap-3 z-50">
           {step > 1 && step <= totalSteps + 1 && (
             <button
@@ -568,7 +575,7 @@ function Step7({ formData, update }: { formData: FormData, update: (u: Partial<F
   );
 }
 
-function StepFinal({ formData, update }: { formData: FormData, update: (u: Partial<FormData>) => void }) {
+function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: FormData, update: (u: Partial<FormData>) => void, trackEvent: (id: string, value?: any) => void, onSuccess: () => void }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -585,12 +592,7 @@ function StepFinal({ formData, update }: { formData: FormData, update: (u: Parti
     setLoading(true);
 
     // HubSpot Tracking: Submit event
-    if (window._hsq) {
-      window._hsq.push(['trackEvent', {
-        id: 'valutazione_richiesta',
-        value: Number(formData.surface) || 0
-      }]);
-    }
+    trackEvent('valutazione_richiesta', Number(formData.surface) || 0);
 
     // Simulate API call
     setTimeout(() => {
@@ -609,10 +611,21 @@ function StepFinal({ formData, update }: { formData: FormData, update: (u: Parti
         <p className="text-lg text-gray-600 max-w-xs mx-auto leading-relaxed">
           Grazie. Ti contatterò personalmente entro 2 ore per la tua valutazione gratuita.
         </p>
-        <div className="pt-8">
+        <div className="pt-8 space-y-4 w-full max-w-xs mx-auto">
+          {/* Download Checklist Button */}
+          <a
+            href="/assets/Checklist.pdf"
+            download
+            onClick={() => trackEvent('checklist_download', { score: 10 })}
+            className="flex items-center justify-center gap-2 w-full px-8 py-4 bg-white border-2 border-[#e3a692] text-[#e3a692] rounded-2xl font-bold shadow-lg hover:bg-orange-50 transition-all transform hover:scale-105"
+          >
+            <Download size={20} />
+            Scarica Checklist Vendita 🎁
+          </a>
+
           <button
             onClick={() => window.location.reload()}
-            className="px-8 py-4 bg-gradient-to-r from-[#e3a692] to-[#d97d6a] text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all transform"
+            className="w-full px-8 py-4 bg-gradient-to-r from-[#e3a692] to-[#d97d6a] text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all transform"
           >
             Torna alla home
           </button>

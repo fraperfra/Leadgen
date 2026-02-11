@@ -668,71 +668,8 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
       .map(s => extraSpacesMap[s] || s.toLowerCase())
       .join(";");
 
-    // --- Lead Score Calculation (0-100) ---
-    let leadScore = 0;
-
-    // Motivazione (30 pts)
-    const mot = formData.motivation || "";
-    if (mot === "Vendere ora") leadScore += 30;
-    else if (mot === "Vendere nei prossimi 6 mesi") leadScore += 20;
-    else if (mot === "Vendere entro 1 anno") leadScore += 10;
-    // "Conoscere il valore senza vendere" and "Sono un agente / operatore" = 0
-
-    // Tipologia (20 pts)
-    const pt = formData.propertyType || "";
-    if (pt === "Villa indipendente") leadScore += 20;
-    else if (pt === "Attico") leadScore += 18;
-    else if (pt === "Villetta a schiera") leadScore += 15;
-    else if (pt === "Appartamento") leadScore += 12;
-    else if (pt === "Loft / Open Space") leadScore += 10;
-    else if (pt === "Mansarda") leadScore += 8;
-
-    // Condizione (12 pts)
-    const cond = formData.condition || "";
-    if (cond === "Nuova costruzione") leadScore += 12;
-    else if (cond === "Ristrutturata") leadScore += 10;
-    else if (cond === "Buono abitabile") leadScore += 6;
-    else if (cond === "Da ristrutturare") leadScore += 2;
-
-    // Classe Energetica (8 pts)
-    const ec = formData.energyClass || "";
-    if (["A4", "A3", "A2", "A1"].includes(ec)) leadScore += 8;
-    else if (["B", "C"].includes(ec)) leadScore += 6;
-    else if (["D", "E"].includes(ec)) leadScore += 4;
-    else if (["F", "G"].includes(ec)) leadScore += 2;
-
-    // Superficie (8 pts)
-    if (surfaceNum >= 120) leadScore += 8;
-    else if (surfaceNum >= 80) leadScore += 6;
-    else if (surfaceNum >= 60) leadScore += 4;
-    else leadScore += 2;
-
-    // Locali (4 pts)
-    if (["4", "5", "6+"].includes(roomsVal)) leadScore += 4;
-    else if (roomsVal === "3") leadScore += 3;
-    else if (roomsVal === "2") leadScore += 2;
-    else if (roomsVal === "1") leadScore += 1;
-
-    // Piano/Ascensore (3 pts)
-    if (pianoAscensore === "piano_alto_con_ascensore") leadScore += 3;
-    else if (pianoAscensore === "piano_terra" || pianoAscensore === "piano_intermedio") leadScore += 2;
-
-    // Spazi Extra (max 6 pts)
-    if (formData.extraSpaces.includes("Box auto")) leadScore += 2;
-    if (formData.extraSpaces.includes("Giardino")) leadScore += 2;
-    if (formData.extraSpaces.includes("Balcone/Terrazzo")) leadScore += 1;
-    if (formData.extraSpaces.includes("Cantina/Soffitta")) leadScore += 1;
-
-    // Cap at 100
-    if (leadScore > 100) leadScore = 100;
-
-    // Category
-    const leadCategory =
-      leadScore >= 80 ? "hot_lead" :
-        leadScore >= 60 ? "warm_lead" :
-          leadScore >= 40 ? "qualified_lead" : "cold_lead";
-
     // --- Build HubSpot Forms API payload ---
+    // Lead scoring (punteggio + categoria) is calculated by HubSpot workflows
     const hubspotPayload = {
       fields: [
         // Contact info
@@ -759,11 +696,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
         { name: "spazi_extra_immobile", value: mappedExtraSpaces },
 
         // Engagement
-        { name: "download_checklist_valutazione", value: "false" }, // Will be updated via separate event
-
-        // Lead scoring
-        { name: "punteggio_lead_valutazione_immobile", value: String(leadScore) },
-        { name: "categoria_lead_valutazione_immobile", value: leadCategory },
+        { name: "download_checklist_valutazione", value: "false" },
       ],
       context: {
         pageUri: landingPageUrl,

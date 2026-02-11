@@ -296,8 +296,8 @@ function Step3({ formData, update }: { formData: FormData, update: (u: Partial<F
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">📏 Quanto è grande la casa?</h2>
-        <p className="text-gray-500">Inserisci la superficie e il numero di stanze</p>
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900">📏 Quanto è grande la casa?</h2>
+        <p className="text-sm text-gray-500">Inserisci la superficie e il numero di stanze</p>
       </div>
 
       <div className="space-y-2">
@@ -349,12 +349,8 @@ function Step3({ formData, update }: { formData: FormData, update: (u: Partial<F
 function Step4({ formData, update }: { formData: FormData, update: (u: Partial<FormData>) => void }) {
   return (
     <div className="space-y-6">
-      <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">🏢 A che piano si trova?</h2>
-        <p className="text-gray-500">Un dettaglio importante per la valutazione</p>
-      </div>
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-gray-900">🏢 A che piano si trova?</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900">🏢 A che piano si trova?</h2>
         <p className="text-sm text-gray-500">Un dettaglio importante per la valutazione</p>
       </div>
       <div className="grid grid-cols-3 gap-2 mt-6">
@@ -381,8 +377,10 @@ function Step5({ formData, update }: { formData: FormData, update: (u: Partial<F
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">🏗️ Dettagli dell'immobile</h2>
-        <p className="text-gray-500">Anno, classe energetica e tipo di riscaldamento</p>
+        <div className="text-center space-y-4">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">🏗️ Dettagli dell'immobile</h2>
+          <p className="text-sm text-gray-500">Anno, classe energetica e tipo di riscaldamento</p>
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -457,8 +455,8 @@ function Step6({ formData, update }: { formData: FormData, update: (u: Partial<F
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">🛠️ Condizione e caratteristiche</h2>
-        <p className="text-gray-500">Stato dell'immobile e spazi extra</p>
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900">🛠️ Condizione e caratteristiche</h2>
+        <p className="text-sm text-gray-500">Stato dell'immobile e spazi extra</p>
       </div>
 
       <div className="space-y-4">
@@ -506,7 +504,7 @@ function Step6({ formData, update }: { formData: FormData, update: (u: Partial<F
               }`}>
               <button
                 onClick={() => toggleExtra(space)}
-                className="w-full flex items-center justify-between p-4"
+                className="w-full flex items-center justify-between p-3"
               >
                 <span className="text-sm font-semibold text-gray-700">{space}</span>
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${formData.extraSpaces.includes(space) ? 'bg-[#e3a692] border-[#e3a692]' : 'border-gray-200'
@@ -544,8 +542,8 @@ function Step7({ formData, update }: { formData: FormData, update: (u: Partial<F
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">📅 Quando vorresti vendere:</h2>
-        <p className="text-gray-500">Seleziona la tua tempistica ideale</p>
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900">📅 Quando vorresti vendere:</h2>
+        <p className="text-sm text-gray-500">Seleziona la tua tempistica ideale</p>
       </div>
 
       <div className="space-y-3 mt-8">
@@ -553,7 +551,7 @@ function Step7({ formData, update }: { formData: FormData, update: (u: Partial<F
           <div key={opt.label} className="relative">
             <button
               onClick={() => update({ motivation: opt.label })}
-              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden ${formData.motivation === opt.label
+              className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all relative overflow-hidden ${formData.motivation === opt.label
                 ? 'border-[#e3a692] bg-[#fdf8f6]'
                 : opt.label === 'Vendere ora'
                   ? 'border-[#e3a692]/50 bg-orange-50/30'
@@ -611,7 +609,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
         <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4 shadow-lg animate-bounce">
           <Check size={48} />
         </div>
-        <h2 className="text-2xl font-black text-gray-900 tracking-tight">Richiesta Ricevuta!</h2>
+        <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">Richiesta Ricevuta!</h2>
         <p className="text-lg text-gray-600 max-w-xs mx-auto leading-relaxed">
           Grazie. Ti contatterò personalmente entro 2 ore per la tua valutazione gratuita.
         </p>
@@ -641,11 +639,11 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">📝 Ultimi Dettagli!</h2>
-        <p className="text-gray-500">Dove inviamo la tua valutazione personalizzata?</p>
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900">📝 Ultimi Dettagli!</h2>
+        <p className="text-sm text-gray-500">Dove inviamo la tua valutazione personalizzata?</p>
       </div>
 
-      <div className="bg-gradient-to-br from-[#fdf8f6] to-[#fff] p-6 rounded-2xl border-2 border-[#e3a692]/30 shadow-lg shadow-[#e3a692]/10 space-y-4 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#fdf8f6] to-[#fff] p-4 rounded-2xl border-2 border-[#e3a692]/30 shadow-lg shadow-[#e3a692]/10 space-y-4 relative overflow-hidden">
         <div className="absolute top-0 right-0 p-3 opacity-10">
           <TrendingUp size={100} color="#e3a692" />
         </div>
@@ -675,7 +673,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
 
       </div>
 
-      <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
         <h3 className="text-xl font-bold text-gray-900 mb-6">Ricevi la tua valutazione</h3>
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Hidden Fields for HubSpot */}
@@ -753,7 +751,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transition-all ${loading ? 'bg-gray-400' : 'bg-[#d97d6a] hover:bg-[#c66c5a]'
+            className={`w-full py-3 rounded-xl font-bold text-white shadow-lg transition-all ${loading ? 'bg-gray-400' : 'bg-[#d97d6a] hover:bg-[#c66c5a]'
               }`}
           >
             {loading ? 'Elaborazione...' : 'Richiedi gratis'}

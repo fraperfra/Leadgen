@@ -705,12 +705,11 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
     };
 
     try {
-      // IMPORTANT: Replace with your actual HubSpot Portal ID and Form GUID
-      const HUBSPOT_PORTAL_ID = "YOUR_PORTAL_ID"; // e.g., "147781010"
-      const HUBSPOT_FORM_GUID = "YOUR_FORM_GUID"; // e.g., "abc123-def456-ghi789"
+      const HUBSPOT_PORTAL_ID = "147781010";
+      const HUBSPOT_FORM_GUID = "5f315feb-ae72-4b07-8cc0-027a23a91b13";
 
       const response = await fetch(
-        `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_GUID}`,
+        `https://api-eu1.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_GUID}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

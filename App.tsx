@@ -113,9 +113,9 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white flex flex-col max-w-lg mx-auto relative shadow-xl overflow-hidden">
       {/* Header */}
-      <header className="pt-4 pb-4 flex flex-col items-center border-b border-gray-50">
-        <div className="mb-6">
-          <img src="/assets/Logo Diba Nero.png" alt="Logo Diba" className="h-16 w-auto object-contain" />
+      <header className="pt-2 pb-2 flex flex-col items-center border-b border-gray-50">
+        <div className="mb-2">
+          <img src="/assets/Logo Diba Nero.png" alt="Logo Diba" className="h-10 w-auto object-contain" />
         </div>
 
         {step <= totalSteps && (
@@ -164,7 +164,7 @@ export default function App() {
           {step > 1 && step <= totalSteps + 1 && (
             <button
               onClick={prevStep}
-              className="flex-1 flex items-center justify-center gap-2 py-4 px-6 border border-gray-200 rounded-xl text-gray-600 font-semibold hover:bg-gray-50 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-6 border border-gray-200 rounded-xl text-gray-600 font-semibold hover:bg-gray-50 transition-colors"
             >
               <ChevronLeft size={20} />
               Indietro
@@ -174,7 +174,7 @@ export default function App() {
             <button
               onClick={nextStep}
               disabled={!isStepValid()}
-              className={`flex-[1.5] flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-semibold text-white transition-all shadow-lg shadow-[#e3a692]/20 ${isStepValid() ? 'bg-[#e3a692] hover:bg-[#d97d6a]' : 'bg-gray-300 cursor-not-allowed'
+              className={`flex-[1.5] flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-semibold text-white transition-all shadow-lg shadow-[#e3a692]/20 ${isStepValid() ? 'bg-[#e3a692] hover:bg-[#d97d6a]' : 'bg-gray-300 cursor-not-allowed'
                 }`}
             >
               {step === totalSteps ? 'Completa' : 'Avanti'}
@@ -239,8 +239,8 @@ function Step1({ formData, update }: { formData: FormData, update: (u: Partial<F
       {/* Address Section */}
       <div className="space-y-6">
         <div className="text-center space-y-4">
-          <h2 className="text-3xl font-bold text-gray-900">📍 Dove si trova l'immobile?</h2>
-          <p className="text-gray-500">Iniziamo dalla base: dove si trova la tua casa?</p>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">📍 Dove si trova l'immobile?</h2>
+          <p className="text-sm text-gray-500">Iniziamo dalla base: dove si trova la tua casa?</p>
         </div>
         <div className="relative mt-8">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
@@ -249,7 +249,7 @@ function Step1({ formData, update }: { formData: FormData, update: (u: Partial<F
             value={formData.address}
             onChange={(e) => update({ address: e.target.value })}
             placeholder="Es. Via Ciro Menotti 26, Modena"
-            className="w-full pl-12 pr-14 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#e3a692]/50 focus:border-[#e3a692] text-lg transition-all custom-shadow"
+            className="w-full pl-12 pr-14 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#e3a692]/50 focus:border-[#e3a692] text-base transition-all custom-shadow"
           />
           <button
             onClick={handleGeolocation}
@@ -265,15 +265,15 @@ function Step1({ formData, update }: { formData: FormData, update: (u: Partial<F
       {/* Property Type Section (Moved from Step 2) */}
       <div className="space-y-6 pt-4 border-t border-gray-50">
         <div className="text-center space-y-4">
-          <h2 className="text-3xl font-bold text-gray-900">🏠 Tipologia</h2>
-          <p className="text-gray-500">Ogni casa ha la sua storia, qual è la tua?</p>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">🏠 Tipologia</h2>
+          <p className="text-sm text-gray-500">Ogni casa ha la sua storia, qual è la tua?</p>
         </div>
         <div className="grid grid-cols-3 gap-3 mt-8">
           {PROPERTY_TYPES.map((type) => (
             <button
               key={type.label}
               onClick={() => update({ propertyType: type.label })}
-              className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all gap-3 aspect-square ${formData.propertyType === type.label
+              className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all gap-2 aspect-square ${formData.propertyType === type.label
                 ? 'border-[#e3a692] bg-[#fdf8f6]'
                 : 'border-gray-100 hover:border-gray-200'
                 }`}
@@ -307,7 +307,7 @@ function Step3({ formData, update }: { formData: FormData, update: (u: Partial<F
           value={formData.surface}
           onChange={(e) => update({ surface: e.target.value })}
           placeholder="Es. 85"
-          className="w-full px-4 py-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#e3a692]/50 focus:border-[#e3a692] outline-none"
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#e3a692]/50 focus:border-[#e3a692] outline-none text-base"
         />
       </div>
 
@@ -318,7 +318,7 @@ function Step3({ formData, update }: { formData: FormData, update: (u: Partial<F
             <button
               key={val}
               onClick={() => update({ rooms: val })}
-              className={`flex-1 min-w-[50px] py-4 rounded-xl border-2 font-bold transition-all ${formData.rooms === val ? 'border-[#e3a692] bg-[#fdf8f6] text-[#e3a692]' : 'border-gray-100 text-gray-600'
+              className={`flex-1 min-w-[50px] py-2.5 rounded-xl border-2 font-bold transition-all text-sm ${formData.rooms === val ? 'border-[#e3a692] bg-[#fdf8f6] text-[#e3a692]' : 'border-gray-100 text-gray-600'
                 }`}
             >
               {val}
@@ -334,7 +334,7 @@ function Step3({ formData, update }: { formData: FormData, update: (u: Partial<F
             <button
               key={val}
               onClick={() => update({ bathrooms: val })}
-              className={`flex-1 min-w-[60px] py-4 rounded-xl border-2 font-bold transition-all ${formData.bathrooms === val ? 'border-[#e3a692] bg-[#fdf8f6] text-[#e3a692]' : 'border-gray-100 text-gray-600'
+              className={`flex-1 min-w-[60px] py-2.5 rounded-xl border-2 font-bold transition-all text-sm ${formData.bathrooms === val ? 'border-[#e3a692] bg-[#fdf8f6] text-[#e3a692]' : 'border-gray-100 text-gray-600'
                 }`}
             >
               {val}
@@ -353,12 +353,16 @@ function Step4({ formData, update }: { formData: FormData, update: (u: Partial<F
         <h2 className="text-3xl font-bold text-gray-900">🏢 A che piano si trova?</h2>
         <p className="text-gray-500">Un dettaglio importante per la valutazione</p>
       </div>
-      <div className="grid grid-cols-3 gap-3 mt-8">
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-bold text-gray-900">🏢 A che piano si trova?</h2>
+        <p className="text-sm text-gray-500">Un dettaglio importante per la valutazione</p>
+      </div>
+      <div className="grid grid-cols-3 gap-2 mt-6">
         {['Terra', '1', '2', '3', '4', '5+'].map((floor) => (
           <button
             key={floor}
             onClick={() => update({ floor })}
-            className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all aspect-square ${formData.floor === floor
+            className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all aspect-square ${formData.floor === floor
               ? 'border-[#e3a692] bg-[#fdf8f6]'
               : 'border-gray-100 hover:border-gray-200'
               }`}
@@ -390,7 +394,7 @@ function Step5({ formData, update }: { formData: FormData, update: (u: Partial<F
             disabled={formData.constructionYearUnknown}
             onChange={(e) => update({ constructionYear: e.target.value })}
             placeholder="Es. 1985"
-            className="flex-1 px-4 py-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#e3a692]/50 focus:border-[#e3a692] outline-none disabled:bg-gray-100 disabled:text-gray-400"
+            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#e3a692]/50 focus:border-[#e3a692] outline-none disabled:bg-gray-100 disabled:text-gray-400 text-base"
           />
           <label className="flex items-center gap-2 cursor-pointer whitespace-nowrap">
             <input
@@ -414,7 +418,7 @@ function Step5({ formData, update }: { formData: FormData, update: (u: Partial<F
             <button
               key={cls}
               onClick={() => update({ energyClass: cls as EnergyClass })}
-              className={`py-3 rounded-xl border-2 font-semibold text-sm transition-all ${formData.energyClass === cls ? 'border-[#e3a692] bg-[#fdf8f6] text-[#e3a692]' : 'border-gray-100 text-gray-600'
+              className={`py-2.5 rounded-xl border-2 font-semibold text-xs transition-all ${formData.energyClass === cls ? 'border-[#e3a692] bg-[#fdf8f6] text-[#e3a692]' : 'border-gray-100 text-gray-600'
                 } ${cls === 'Non lo so' ? 'col-span-2' : ''}`}
             >
               {cls}
@@ -428,7 +432,7 @@ function Step5({ formData, update }: { formData: FormData, update: (u: Partial<F
         <select
           value={formData.heatingType}
           onChange={(e) => update({ heatingType: e.target.value })}
-          className="w-full px-4 py-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#e3a692]/50 focus:border-[#e3a692] outline-none bg-white"
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#e3a692]/50 focus:border-[#e3a692] outline-none bg-white text-base"
         >
           <option value="">Seleziona tipo di riscaldamento</option>
           <option value="Autonomo">Autonomo</option>
@@ -464,7 +468,7 @@ function Step6({ formData, update }: { formData: FormData, update: (u: Partial<F
             <button
               key={opt.label}
               onClick={() => update({ condition: opt.label })}
-              className={`flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all ${formData.condition === opt.label ? 'border-[#e3a692] bg-[#fdf8f6]' : 'border-gray-100'
+              className={`flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all ${formData.condition === opt.label ? 'border-[#e3a692] bg-[#fdf8f6]' : 'border-gray-100'
                 }`}
             >
               <div className={formData.condition === opt.label ? 'text-[#e3a692]' : 'text-gray-400'}>
@@ -485,7 +489,7 @@ function Step6({ formData, update }: { formData: FormData, update: (u: Partial<F
             <button
               key={String(val)}
               onClick={() => update({ hasElevator: val })}
-              className={`flex-1 py-4 rounded-xl border-2 font-bold transition-all ${formData.hasElevator === val ? 'border-[#e3a692] bg-[#fdf8f6] text-[#e3a692]' : 'border-gray-100 text-gray-600'
+              className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all text-sm ${formData.hasElevator === val ? 'border-[#e3a692] bg-[#fdf8f6] text-[#e3a692]' : 'border-gray-100 text-gray-600'
                 }`}
             >
               {val ? 'Sì' : 'No'}
@@ -549,7 +553,7 @@ function Step7({ formData, update }: { formData: FormData, update: (u: Partial<F
           <div key={opt.label} className="relative">
             <button
               onClick={() => update({ motivation: opt.label })}
-              className={`w-full flex items-center gap-4 p-5 rounded-xl border-2 text-left transition-all relative overflow-hidden ${formData.motivation === opt.label
+              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden ${formData.motivation === opt.label
                 ? 'border-[#e3a692] bg-[#fdf8f6]'
                 : opt.label === 'Vendere ora'
                   ? 'border-[#e3a692]/50 bg-orange-50/30'
@@ -607,17 +611,17 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
         <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4 shadow-lg animate-bounce">
           <Check size={48} />
         </div>
-        <h2 className="text-4xl font-black text-gray-900 tracking-tight">Richiesta Ricevuta!</h2>
+        <h2 className="text-2xl font-black text-gray-900 tracking-tight">Richiesta Ricevuta!</h2>
         <p className="text-lg text-gray-600 max-w-xs mx-auto leading-relaxed">
           Grazie. Ti contatterò personalmente entro 2 ore per la tua valutazione gratuita.
         </p>
-        <div className="pt-8 space-y-4 w-full max-w-xs mx-auto">
+        <div className="pt-6 space-y-3 w-full max-w-xs mx-auto">
           {/* Download Checklist Button */}
           <a
             href="/assets/Checklist.pdf"
             download
             onClick={() => trackEvent('checklist_download', { score: 10 })}
-            className="flex items-center justify-center gap-2 w-full px-8 py-4 bg-white border-2 border-[#e3a692] text-[#e3a692] rounded-2xl font-bold shadow-lg hover:bg-orange-50 transition-all transform hover:scale-105"
+            className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-white border-2 border-[#e3a692] text-[#e3a692] rounded-2xl font-bold shadow-lg hover:bg-orange-50 transition-all transform hover:scale-105"
           >
             <Download size={20} />
             Scarica Checklist Vendita 🎁
@@ -625,9 +629,9 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
 
           <button
             onClick={() => window.location.reload()}
-            className="w-full px-8 py-4 bg-gradient-to-r from-[#e3a692] to-[#d97d6a] text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all transform"
+            className="w-full px-6 py-3 bg-gradient-to-r from-[#e3a692] to-[#d97d6a] text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all transform"
           >
-            Torna alla home
+            Nuova Valutazione
           </button>
         </div>
       </div>

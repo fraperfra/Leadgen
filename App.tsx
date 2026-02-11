@@ -677,6 +677,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
         { name: "lastname", value: formData.lastName },
         { name: "email", value: formData.email },
         { name: "phone", value: formData.phone },
+        { name: "address", value: formData.address },
 
         // UTM & page tracking
         { name: "utm_source", value: utmSource },

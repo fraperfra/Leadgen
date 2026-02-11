@@ -732,78 +732,62 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
         leadScore >= 60 ? "warm_lead" :
           leadScore >= 40 ? "qualified_lead" : "cold_lead";
 
-    // --- Build HubSpot Forms API payload ---
-    const hubspotPayload = {
-      fields: [
-        // Standard HubSpot contact properties (always available)
-        { name: "firstname", value: formData.firstName },
-        { name: "lastname", value: formData.lastName },
-        { name: "email", value: formData.email },
-        { name: "phone", value: formData.phone },
-        { name: "address", value: formData.address },
+    // --- Prepare Payload for Local Email API ---
+    const emailPayload = {
+      // Contact Info
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phone: formData.phone,
+      address: formData.address,
 
-        // UTM & page tracking
-        { name: "utm_source", value: utmSource },
-        { name: "utm_medium", value: utmMedium },
-        { name: "utm_campaign", value: utmCampaign },
+      // Property Details
+      motivation: formData.motivation,
+      propertyType: formData.propertyType,
+      condition: formData.condition,
+      energyClass: formData.energyClass,
+      surface: formData.surface,
+      rooms: formData.rooms,
+      bathrooms: formData.bathrooms, // Added missing field
+      floor: formData.floor,
+      hasElevator: formData.hasElevator ? "Yes" : "No",
+      extraSpaces: formData.extraSpaces.join(", "),
 
-        // Custom properties — these MUST exist in HubSpot first!
-        // Create them in: Settings > Properties > Contact properties > Create property
-        { name: "landing_page_url", value: landingPageUrl },
-        { name: "referrer_url", value: referrerUrl },
-        { name: "motivazione_vendita", value: motivationMap[formData.motivation || ""] || "" },
-        { name: "tipologia_immobile", value: propertyTypeMap[formData.propertyType || ""] || "" },
-        { name: "condizione_immobile", value: conditionMap[formData.condition || ""] || "" },
-        { name: "classe_energetica_immobile", value: energyClassMap[formData.energyClass || ""] || "" },
-        { name: "superficie_immobile_fascia", value: superficieFascia },
-        { name: "numero_locali_immobile", value: numeroLocali },
-        { name: "piano_ascensore_immobile", value: pianoAscensore },
-        { name: "spazi_extra_immobile", value: mappedExtraSpaces },
-        { name: "download_checklist_valutazione", value: "false" },
+      // Derived Data
+      leadScore: leadScore,
+      leadCategory: leadCategory,
 
-        // Derived Lead Score
-        { name: "punteggio_lead_valutazione_immobile", value: String(leadScore) },
-        { name: "categoria_lead_valutazione_immobile", value: leadCategory },
-      ],
-      context: {
-        pageUri: landingPageUrl,
-        pageName: document.title,
-      },
+      // Tracking
+      landingPageUrl: window.location.href,
+      utmSource: utmSource,
+      utmMedium: utmMedium,
+      utmCampaign: utmCampaign,
     };
 
-    // DEBUG: Log the payload being sent
-    console.log("📤 HubSpot payload:", JSON.stringify(hubspotPayload, null, 2));
+    console.log("📤 Sending email payload:", JSON.stringify(emailPayload, null, 2));
 
     try {
-      const HUBSPOT_PORTAL_ID = "147781010";
-      const HUBSPOT_FORM_GUID = "5f315feb-ae72-4b07-8cc0-027a23a91b13";
-
-      const response = await fetch(
-        `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_GUID}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(hubspotPayload),
-        }
-      );
-
-      const responseData = await response.text();
-      console.log("📥 HubSpot response status:", response.status);
-      console.log("📥 HubSpot response body:", responseData);
+      // Call local Vercel Serverless Function
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(emailPayload),
+      });
 
       if (!response.ok) {
-        console.error("❌ HubSpot API error:", response.status, responseData);
-        throw new Error(`HubSpot API error: ${response.status} - ${responseData}`);
+        throw new Error(`Email API error: ${response.status}`);
       }
 
-      console.log("✅ HubSpot submission successful!");
+      console.log("✅ Email sent successfully!");
       setLoading(false);
       setSuccess(true);
       onSuccess();
     } catch (error) {
-      console.error("❌ Error submitting to HubSpot:", error);
+      console.error("❌ Error sending email:", error);
 
-      // Fallback: Still show success to user (data is tracked via HubSpot tracking code)
+      // Still show success to user so they don't retry endlessly
       setLoading(false);
       setSuccess(true);
       onSuccess();

@@ -672,7 +672,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
     // Lead scoring (punteggio + categoria) is calculated by HubSpot workflows
     const hubspotPayload = {
       fields: [
-        // Contact info
+        // Standard HubSpot contact properties (always available)
         { name: "firstname", value: formData.firstName },
         { name: "lastname", value: formData.lastName },
         { name: "email", value: formData.email },
@@ -682,10 +682,11 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
         { name: "utm_source", value: utmSource },
         { name: "utm_medium", value: utmMedium },
         { name: "utm_campaign", value: utmCampaign },
+
+        // Custom properties — these MUST exist in HubSpot first!
+        // Create them in: Settings > Properties > Contact properties > Create property
         { name: "landing_page_url", value: landingPageUrl },
         { name: "referrer_url", value: referrerUrl },
-
-        // Property data (mapped to HubSpot enums)
         { name: "motivazione_vendita", value: motivationMap[formData.motivation || ""] || "" },
         { name: "tipologia_immobile", value: propertyTypeMap[formData.propertyType || ""] || "" },
         { name: "condizione_immobile", value: conditionMap[formData.condition || ""] || "" },
@@ -694,8 +695,6 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
         { name: "numero_locali_immobile", value: numeroLocali },
         { name: "piano_ascensore_immobile", value: pianoAscensore },
         { name: "spazi_extra_immobile", value: mappedExtraSpaces },
-
-        // Engagement
         { name: "download_checklist_valutazione", value: "false" },
       ],
       context: {
@@ -703,6 +702,9 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
         pageName: document.title,
       },
     };
+
+    // DEBUG: Log the payload being sent
+    console.log("📤 HubSpot payload:", JSON.stringify(hubspotPayload, null, 2));
 
     try {
       const HUBSPOT_PORTAL_ID = "147781010";
@@ -717,16 +719,21 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
         }
       );
 
+      const responseData = await response.text();
+      console.log("📥 HubSpot response status:", response.status);
+      console.log("📥 HubSpot response body:", responseData);
+
       if (!response.ok) {
-        throw new Error(`HubSpot API error: ${response.status}`);
+        console.error("❌ HubSpot API error:", response.status, responseData);
+        throw new Error(`HubSpot API error: ${response.status} - ${responseData}`);
       }
 
-      // Success!
+      console.log("✅ HubSpot submission successful!");
       setLoading(false);
       setSuccess(true);
       onSuccess();
     } catch (error) {
-      console.error("Error submitting to HubSpot:", error);
+      console.error("❌ Error submitting to HubSpot:", error);
 
       // Fallback: Still show success to user (data is tracked via HubSpot tracking code)
       setLoading(false);

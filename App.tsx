@@ -790,6 +790,9 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
       }
 
       console.log("✅ Email sent successfully!");
+      if (window.fbq) {
+        window.fbq('track', 'CompleteRegistration');
+      }
       setLoading(false);
       setSuccess(true);
       onSuccess();

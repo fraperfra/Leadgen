@@ -40,7 +40,7 @@ export default async function handler(request, response) {
         // Send email via Resend
         const { data: emailData, error } = await resend.emails.send({
             from: 'Valutazione Immobiliare <onboarding@resend.dev>', // Default Resend testing domain
-            to: ['fracopo98@gmail.com'], // Replace with your email or process.env.TO_EMAIL
+            to: ['fracop98@gmail.com'],
             subject: `🔥 Nuovo Lead ${leadCategory}: ${firstName} ${lastName} (${leadScore} pt)`,
             html: `
         <!DOCTYPE html>

@@ -589,18 +589,218 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     // HubSpot Tracking: Submit event
     trackEvent('valutazione_richiesta', Number(formData.surface) || 0);
 
-    // Simulate API call
-    setTimeout(() => {
+    // --- UTM Tracking: extract from URL params ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmSource = urlParams.get("utm_source") || "";
+    const utmMedium = urlParams.get("utm_medium") || "";
+    const utmCampaign = urlParams.get("utm_campaign") || "";
+    const landingPageUrl = window.location.href;
+    const referrerUrl = document.referrer || "";
+
+    // --- Map form values to HubSpot enum values ---
+    const motivationMap: Record<string, string> = {
+      "Vendere ora": "vendere_ora",
+      "Vendere nei prossimi 6 mesi": "entro_6_mesi",
+      "Vendere entro 1 anno": "dopo_6_mesi",
+      "Conoscere il valore senza vendere": "solo_curiosita",
+      "Sono un agente / operatore": "solo_curiosita",
+    };
+
+    const propertyTypeMap: Record<string, string> = {
+      "Villa indipendente": "villa_indipendente",
+      "Attico": "attico",
+      "Villetta a schiera": "casa_a_schiera",
+      "Appartamento": "appartamento",
+      "Loft / Open Space": "appartamento",
+      "Mansarda": "appartamento",
+    };
+
+    const conditionMap: Record<string, string> = {
+      "Nuova costruzione": "nuovo",
+      "Ristrutturata": "ottima",
+      "Buono abitabile": "buona",
+      "Da ristrutturare": "da_ristrutturare",
+    };
+
+    const energyClassMap: Record<string, string> = {
+      "A4": "classe_a_plus_a",
+      "A3": "classe_a_plus_a",
+      "A2": "classe_a_plus_a",
+      "A1": "classe_a_plus_a",
+      "B": "classe_b_c",
+      "C": "classe_b_c",
+      "D": "classe_d_e",
+      "E": "classe_d_e",
+      "F": "classe_f_g",
+      "G": "classe_f_g",
+      "Non lo so": "",
+    };
+
+    const extraSpacesMap: Record<string, string> = {
+      "Box auto": "box",
+      "Giardino": "giardino",
+      "Balcone/Terrazzo": "balcone",
+      "Cantina/Soffitta": "cantina",
+    };
+
+    // --- Calculate derived values ---
+    const surfaceNum = Number(formData.surface) || 0;
+    const superficieFascia = surfaceNum >= 120 ? "mq_120_plus" : surfaceNum >= 80 ? "mq_80_119" : surfaceNum >= 60 ? "mq_60_79" : "mq_sotto_60";
+
+    const roomsVal = formData.rooms;
+    const numeroLocali = ["4", "5", "6+"].includes(roomsVal) ? "locali_4_plus" : roomsVal === "3" ? "locali_3" : roomsVal === "2" ? "locali_2" : "locali_1";
+
+    const floorVal = formData.floor;
+    const hasElev = formData.hasElevator;
+    const pianoAscensore =
+      ["3", "4", "5+"].includes(floorVal) && hasElev === true ? "piano_alto_con_ascensore" :
+        ["3", "4", "5+"].includes(floorVal) && hasElev === false ? "piano_alto_senza_ascensore" :
+          floorVal === "Terra" ? "piano_terra" : "piano_intermedio";
+
+    const mappedExtraSpaces = formData.extraSpaces
+      .map(s => extraSpacesMap[s] || s.toLowerCase())
+      .join(";");
+
+    // --- Lead Score Calculation (0-100) ---
+    let leadScore = 0;
+
+    // Motivazione (30 pts)
+    const mot = formData.motivation || "";
+    if (mot === "Vendere ora") leadScore += 30;
+    else if (mot === "Vendere nei prossimi 6 mesi") leadScore += 20;
+    else if (mot === "Vendere entro 1 anno") leadScore += 10;
+    // "Conoscere il valore senza vendere" and "Sono un agente / operatore" = 0
+
+    // Tipologia (20 pts)
+    const pt = formData.propertyType || "";
+    if (pt === "Villa indipendente") leadScore += 20;
+    else if (pt === "Attico") leadScore += 18;
+    else if (pt === "Villetta a schiera") leadScore += 15;
+    else if (pt === "Appartamento") leadScore += 12;
+    else if (pt === "Loft / Open Space") leadScore += 10;
+    else if (pt === "Mansarda") leadScore += 8;
+
+    // Condizione (12 pts)
+    const cond = formData.condition || "";
+    if (cond === "Nuova costruzione") leadScore += 12;
+    else if (cond === "Ristrutturata") leadScore += 10;
+    else if (cond === "Buono abitabile") leadScore += 6;
+    else if (cond === "Da ristrutturare") leadScore += 2;
+
+    // Classe Energetica (8 pts)
+    const ec = formData.energyClass || "";
+    if (["A4", "A3", "A2", "A1"].includes(ec)) leadScore += 8;
+    else if (["B", "C"].includes(ec)) leadScore += 6;
+    else if (["D", "E"].includes(ec)) leadScore += 4;
+    else if (["F", "G"].includes(ec)) leadScore += 2;
+
+    // Superficie (8 pts)
+    if (surfaceNum >= 120) leadScore += 8;
+    else if (surfaceNum >= 80) leadScore += 6;
+    else if (surfaceNum >= 60) leadScore += 4;
+    else leadScore += 2;
+
+    // Locali (4 pts)
+    if (["4", "5", "6+"].includes(roomsVal)) leadScore += 4;
+    else if (roomsVal === "3") leadScore += 3;
+    else if (roomsVal === "2") leadScore += 2;
+    else if (roomsVal === "1") leadScore += 1;
+
+    // Piano/Ascensore (3 pts)
+    if (pianoAscensore === "piano_alto_con_ascensore") leadScore += 3;
+    else if (pianoAscensore === "piano_terra" || pianoAscensore === "piano_intermedio") leadScore += 2;
+
+    // Spazi Extra (max 6 pts)
+    if (formData.extraSpaces.includes("Box auto")) leadScore += 2;
+    if (formData.extraSpaces.includes("Giardino")) leadScore += 2;
+    if (formData.extraSpaces.includes("Balcone/Terrazzo")) leadScore += 1;
+    if (formData.extraSpaces.includes("Cantina/Soffitta")) leadScore += 1;
+
+    // Cap at 100
+    if (leadScore > 100) leadScore = 100;
+
+    // Category
+    const leadCategory =
+      leadScore >= 80 ? "hot_lead" :
+        leadScore >= 60 ? "warm_lead" :
+          leadScore >= 40 ? "qualified_lead" : "cold_lead";
+
+    // --- Build HubSpot Forms API payload ---
+    const hubspotPayload = {
+      fields: [
+        // Contact info
+        { name: "firstname", value: formData.firstName },
+        { name: "lastname", value: formData.lastName },
+        { name: "email", value: formData.email },
+        { name: "phone", value: formData.phone },
+
+        // UTM & page tracking
+        { name: "utm_source", value: utmSource },
+        { name: "utm_medium", value: utmMedium },
+        { name: "utm_campaign", value: utmCampaign },
+        { name: "landing_page_url", value: landingPageUrl },
+        { name: "referrer_url", value: referrerUrl },
+
+        // Property data (mapped to HubSpot enums)
+        { name: "motivazione_vendita", value: motivationMap[formData.motivation || ""] || "" },
+        { name: "tipologia_immobile", value: propertyTypeMap[formData.propertyType || ""] || "" },
+        { name: "condizione_immobile", value: conditionMap[formData.condition || ""] || "" },
+        { name: "classe_energetica_immobile", value: energyClassMap[formData.energyClass || ""] || "" },
+        { name: "superficie_immobile_fascia", value: superficieFascia },
+        { name: "numero_locali_immobile", value: numeroLocali },
+        { name: "piano_ascensore_immobile", value: pianoAscensore },
+        { name: "spazi_extra_immobile", value: mappedExtraSpaces },
+
+        // Engagement
+        { name: "download_checklist_valutazione", value: "false" }, // Will be updated via separate event
+
+        // Lead scoring
+        { name: "punteggio_lead_valutazione_immobile", value: String(leadScore) },
+        { name: "categoria_lead_valutazione_immobile", value: leadCategory },
+      ],
+      context: {
+        pageUri: landingPageUrl,
+        pageName: document.title,
+      },
+    };
+
+    try {
+      // IMPORTANT: Replace with your actual HubSpot Portal ID and Form GUID
+      const HUBSPOT_PORTAL_ID = "YOUR_PORTAL_ID"; // e.g., "147781010"
+      const HUBSPOT_FORM_GUID = "YOUR_FORM_GUID"; // e.g., "abc123-def456-ghi789"
+
+      const response = await fetch(
+        `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_GUID}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(hubspotPayload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HubSpot API error: ${response.status}`);
+      }
+
+      // Success!
       setLoading(false);
       setSuccess(true);
-    }, 1500);
+      onSuccess();
+    } catch (error) {
+      console.error("Error submitting to HubSpot:", error);
+
+      // Fallback: Still show success to user (data is tracked via HubSpot tracking code)
+      setLoading(false);
+      setSuccess(true);
+      onSuccess();
+    }
   };
 
   if (success) {

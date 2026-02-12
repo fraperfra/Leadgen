@@ -17,7 +17,7 @@ declare global {
 
 export default function App() {
   const [step, setStep] = useState(1);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(window.location.pathname === '/pagina_ringraziamento');
   const totalSteps = 6;
 
   // Helper to track events
@@ -105,7 +105,7 @@ export default function App() {
       case 4: return <Step5 formData={formData} update={updateFormData} />;
       case 5: return <Step6 formData={formData} update={updateFormData} />;
       case 6: return <Step7 formData={formData} update={updateFormData} />;
-      case 7: return <StepFinal formData={formData} update={updateFormData} trackEvent={trackEvent} onSuccess={() => setIsSuccess(true)} />;
+      case 7: return <StepFinal formData={formData} update={updateFormData} trackEvent={trackEvent} onSuccess={() => { window.history.pushState({}, '', '/pagina_ringraziamento'); setIsSuccess(true); }} />;
       default: return null;
     }
   };

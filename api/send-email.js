@@ -98,7 +98,7 @@ export default async function handler(request, response) {
             </div>
 
             <div class="section">
-              <div class="section-title">📊 Tracking</div>
+              <div class="section-title">📊 Provenienza</div>
               <div class="grid">
                 <div class="row"><div class="label">Landing Page:</div><div class="value">${landingPageUrl}</div></div>
                 <div class="row"><div class="label">Source:</div><div class="value">${utmSource} / ${utmSource}</div></div>

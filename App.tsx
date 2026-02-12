@@ -809,9 +809,16 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
         <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4 shadow-lg animate-bounce">
           <Check size={48} />
         </div>
-        <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">Richiesta Ricevuta!</h2>
+        <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">Perfetto!</h2>
         <p className="text-lg text-gray-600 max-w-xs mx-auto leading-relaxed">
-          Grazie. Ti contatterò personalmente entro 2 ore per la tua valutazione gratuita.
+          Abbiamo ricevuto la tua richiesta.<br />
+          Ti chiameremo entro 30 minuti da questo numero
+        </p>
+        <a href="tel:3274911031" className="text-2xl font-bold text-[#e3a692] hover:underline">
+          📞 3274911031
+        </a>
+        <p className="text-lg text-gray-600 max-w-xs mx-auto leading-relaxed">
+          Nel frattempo ti ho preparato una <strong>CheckList</strong> di tutta la documentazione che serve per <strong>Vendere velocemente</strong> il tuo immobile
         </p>
         <div className="pt-6 space-y-3 w-full max-w-xs mx-auto">
           {/* Download Checklist Button */}
@@ -819,7 +826,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
             href="/assets/Checklist.pdf"
             download
             onClick={() => trackEvent('checklist_download', { score: 10 })}
-            className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-white border-2 border-[#e3a692] text-[#e3a692] rounded-2xl font-bold shadow-lg hover:bg-orange-50 transition-all transform hover:scale-105"
+            className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-[#e3a692] to-[#d97d6a] text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all transform"
           >
             <Download size={20} />
             Scarica Checklist Vendita 🎁
@@ -827,7 +834,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
 
           <button
             onClick={() => window.location.reload()}
-            className="w-full px-6 py-3 bg-gradient-to-r from-[#e3a692] to-[#d97d6a] text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all transform"
+            className="w-full px-6 py-3 bg-white border-2 border-[#e3a692] text-[#e3a692] rounded-2xl font-bold shadow-lg hover:bg-orange-50 transition-all transform hover:scale-105"
           >
             Nuova Valutazione
           </button>

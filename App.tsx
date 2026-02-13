@@ -755,9 +755,6 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
   if (success) {
     return (
       <div className="flex flex-col items-center justify-center text-center space-y-6 pt-12">
-        <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4 shadow-lg animate-bounce">
-          <Check size={48} />
-        </div>
         <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">Perfetto!</h2>
         <p className="text-lg text-gray-600 max-w-xs mx-auto leading-relaxed">
           Abbiamo ricevuto la tua richiesta.<br />

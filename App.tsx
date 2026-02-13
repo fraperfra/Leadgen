@@ -814,7 +814,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
           </a>
 
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => { window.location.href = '/'; }}
             className="w-full px-6 py-3 bg-white border-2 border-[#e3a692] text-[#e3a692] rounded-2xl font-bold shadow-lg hover:bg-orange-50 transition-all transform hover:scale-105"
           >
             Nuova Valutazione

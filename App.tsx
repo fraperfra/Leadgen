@@ -7,8 +7,10 @@ import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase Client (Client-side)
 // Initialize Supabase Client (Client-side)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Initialize Supabase Client (Client-side)
+// Using import.meta.env for Vite native support (works better with Vercel)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Only initialize if we have credentials, otherwise null (prevents crash)
 const supabase = (supabaseUrl && supabaseKey)

@@ -494,6 +494,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
   // Track page view for final step
   React.useEffect(() => {
@@ -899,6 +900,18 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
             />
           </div>
 
+          <label className="flex items-start gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={privacyAccepted}
+              onChange={(e) => setPrivacyAccepted(e.target.checked)}
+              className="w-4 h-4 mt-0.5 rounded border-gray-300 text-[#e3a692] focus:ring-[#e3a692] shrink-0"
+            />
+            <span className="text-[11px] text-gray-500 leading-relaxed">
+              Ho letto e accetto la <a href="/privacy-policy" target="_blank" className="text-[#d97d6a] underline font-semibold">Privacy Policy</a> e autorizzo il trattamento dei miei dati personali ai sensi del GDPR (Reg. UE 2016/679).
+            </span>
+          </label>
+
           {errorMsg && (
             <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm text-center">
               {errorMsg}
@@ -907,16 +920,12 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
 
           <button
             type="submit"
-            disabled={loading}
-            className={`w-full py-3 rounded-xl font-bold text-white shadow-lg transition-all ${loading ? 'bg-gray-400' : 'bg-[#d97d6a] hover:bg-[#c66c5a]'
+            disabled={loading || !privacyAccepted}
+            className={`w-full py-3 rounded-xl font-bold text-white shadow-lg transition-all ${loading || !privacyAccepted ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#d97d6a] hover:bg-[#c66c5a]'
               }`}
           >
             {loading ? 'Elaborazione...' : 'Richiedi gratis'}
           </button>
-
-          <p className="text-[10px] text-gray-400 text-center leading-relaxed px-4">
-            I tuoi dati sono al sicuro. Li useremo solo per contattarti riguardo la valutazione.
-          </p>
         </form>
       </div>
     </div>

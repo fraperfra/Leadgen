@@ -31,7 +31,7 @@ declare global {
 export default function App() {
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(window.location.pathname === '/pagina_ringraziamento');
-  const totalSteps = 5;
+  const totalSteps = 4;
 
   // Helper to track events
   const trackEvent = (eventId: string, value?: any) => {
@@ -102,10 +102,8 @@ export default function App() {
     switch (step) {
       case 1: return !!formData.address && !!formData.propertyType;
       case 2: return formData.surface !== '' && formData.rooms !== '' && formData.bathrooms !== '';
-      case 3: return formData.floor !== '';
-      // Step 4 (Characteristics) removed
-      case 4: return formData.condition !== null && formData.hasElevator !== null;
-      case 5: return formData.motivation !== null;
+      case 3: return formData.floor !== '' && formData.condition !== null && formData.hasElevator !== null;
+      case 4: return formData.motivation !== null;
       default: return true;
     }
   };
@@ -114,11 +112,9 @@ export default function App() {
     switch (step) {
       case 1: return <Step1 formData={formData} update={updateFormData} />;
       case 2: return <Step3 formData={formData} update={updateFormData} />;
-      case 3: return <Step4 formData={formData} update={updateFormData} />;
-      // Step 5 removed
-      case 4: return <Step6 formData={formData} update={updateFormData} />;
-      case 5: return <Step7 formData={formData} update={updateFormData} />;
-      case 6: return <StepFinal formData={formData} update={updateFormData} trackEvent={trackEvent} onSuccess={() => { window.history.pushState({}, '', '/pagina_ringraziamento'); setIsSuccess(true); }} />;
+      case 3: return <StepFloorAndDetails formData={formData} update={updateFormData} />;
+      case 4: return <Step7 formData={formData} update={updateFormData} />;
+      case 5: return <StepFinal formData={formData} update={updateFormData} trackEvent={trackEvent} onSuccess={() => { window.history.pushState({}, '', '/pagina_ringraziamento'); setIsSuccess(true); }} />;
       default: return null;
     }
   };
@@ -142,9 +138,8 @@ export default function App() {
                   <span className="text-xs font-bold text-[#d97d6a] animate-pulse">
                     {step === 1 && "Iniziamo!"}
                     {step === 2 && "Ottimo inizio!"}
-                    {step === 3 && "Continua così!"}
-                    {step === 4 && "Quasi fatto!"}
-                    {step === 5 && "Ultimo sforzo!"}
+                    {step === 3 && "Quasi fatto!"}
+                    {step === 4 && "Ultimo sforzo!"}
                   </span>
                   <span className="text-xs text-gray-400 font-medium">
                     {Math.round((step / totalSteps) * 100)}%
@@ -358,36 +353,7 @@ function Step3({ formData, update }: { formData: FormData, update: (u: Partial<F
   );
 }
 
-function Step4({ formData, update }: { formData: FormData, update: (u: Partial<FormData>) => void }) {
-  return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900">🏢 A che piano si trova?</h2>
-        <p className="text-sm text-gray-500">Un dettaglio importante per la valutazione</p>
-      </div>
-      <div className="grid grid-cols-3 gap-2 mt-6">
-        {['Terra', '1', '2', '3', '4', '5+'].map((floor) => (
-          <button
-            key={floor}
-            onClick={() => update({ floor })}
-            className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all aspect-square ${formData.floor === floor
-              ? 'border-[#e3a692] bg-[#fdf8f6]'
-              : 'border-gray-100 hover:border-gray-200'
-              }`}
-          >
-            <span className={`text-xl font-bold ${formData.floor === floor ? 'text-gray-900' : 'text-gray-600'}`}>
-              {floor}
-            </span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-
-
-function Step6({ formData, update }: { formData: FormData, update: (u: Partial<FormData>) => void }) {
+function StepFloorAndDetails({ formData, update }: { formData: FormData, update: (u: Partial<FormData>) => void }) {
   const toggleExtra = (space: string) => {
     const current = formData.extraSpaces;
     if (current.includes(space)) {
@@ -398,20 +364,39 @@ function Step6({ formData, update }: { formData: FormData, update: (u: Partial<F
   };
 
   return (
-    <div className="space-y-8">
-      <div className="text-center space-y-4">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900">🛠️ Condizione e caratteristiche</h2>
-        <p className="text-sm text-gray-500">Stato dell'immobile e spazi extra</p>
+    <div className="space-y-6">
+      {/* Piano */}
+      <div className="space-y-2">
+        <div className="text-center space-y-1">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">🏢 Dettagli dell'immobile</h2>
+          <p className="text-sm text-gray-500">Piano, condizione e caratteristiche</p>
+        </div>
+        <label className="text-sm font-bold text-gray-700">A che piano si trova?</label>
+        <div className="grid grid-cols-6 gap-2">
+          {['Terra', '1', '2', '3', '4', '5+'].map((floor) => (
+            <button
+              key={floor}
+              onClick={() => update({ floor })}
+              className={`flex items-center justify-center py-2 rounded-xl border-2 transition-all text-sm font-bold ${formData.floor === floor
+                ? 'border-[#e3a692] bg-[#fdf8f6] text-[#e3a692]'
+                : 'border-gray-100 hover:border-gray-200 text-gray-600'
+                }`}
+            >
+              {floor}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="space-y-4">
+      {/* Condizione */}
+      <div className="space-y-2">
         <label className="text-sm font-bold text-gray-700">In che condizione è la casa?</label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           {CONDITION_OPTIONS.map(opt => (
             <button
               key={opt.label}
               onClick={() => update({ condition: opt.label })}
-              className={`flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all ${formData.condition === opt.label ? 'border-[#e3a692] bg-[#fdf8f6]' : 'border-gray-100'
+              className={`flex items-center gap-2 p-2.5 rounded-xl border-2 text-left transition-all ${formData.condition === opt.label ? 'border-[#e3a692] bg-[#fdf8f6]' : 'border-gray-100'
                 }`}
             >
               <div className={formData.condition === opt.label ? 'text-[#e3a692]' : 'text-gray-400'}>
@@ -425,14 +410,15 @@ function Step6({ formData, update }: { formData: FormData, update: (u: Partial<F
         </div>
       </div>
 
-      <div className="space-y-4">
+      {/* Ascensore */}
+      <div className="space-y-2">
         <label className="text-sm font-bold text-gray-700">C'è un ascensore?</label>
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           {[true, false].map(val => (
             <button
               key={String(val)}
               onClick={() => update({ hasElevator: val })}
-              className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all text-sm ${formData.hasElevator === val ? 'border-[#e3a692] bg-[#fdf8f6] text-[#e3a692]' : 'border-gray-100 text-gray-600'
+              className={`flex-1 py-2.5 rounded-xl border-2 font-bold transition-all text-sm ${formData.hasElevator === val ? 'border-[#e3a692] bg-[#fdf8f6] text-[#e3a692]' : 'border-gray-100 text-gray-600'
                 }`}
             >
               {val ? 'Sì' : 'No'}
@@ -441,41 +427,23 @@ function Step6({ formData, update }: { formData: FormData, update: (u: Partial<F
         </div>
       </div>
 
-      <div className="space-y-4">
+      {/* Altri spazi - 2 colonne, solo selezionabili */}
+      <div className="space-y-2">
         <label className="text-sm font-bold text-gray-700">Altri spazi</label>
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-2">
           {['Balcone/Terrazzo', 'Cantina/Soffitta', 'Box auto', 'Giardino'].map(space => (
-            <div key={space} className={`rounded-xl border-2 transition-all overflow-hidden ${formData.extraSpaces.includes(space) ? 'border-[#e3a692] bg-[#fdf8f6]' : 'border-gray-100'
-              }`}>
-              <button
-                onClick={() => toggleExtra(space)}
-                className="w-full flex items-center justify-between p-3"
-              >
-                <span className="text-sm font-semibold text-gray-700">{space}</span>
-                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${formData.extraSpaces.includes(space) ? 'bg-[#e3a692] border-[#e3a692]' : 'border-gray-200'
-                  }`}>
-                  {formData.extraSpaces.includes(space) && <Check size={14} className="text-white" />}
-                </div>
-              </button>
-              {formData.extraSpaces.includes(space) && (
-                <div className="px-4 pb-4 pt-0 animate-in slide-in-from-top-2 fade-in duration-300">
-                  <label className="text-xs font-semibold text-gray-500 mb-1 block">Superficie (mq)</label>
-                  <input
-                    type="number"
-                    value={formData.extraSpaceDimensions?.[space] || ''}
-                    onChange={(e) => update({
-                      extraSpaceDimensions: {
-                        ...formData.extraSpaceDimensions,
-                        [space]: e.target.value
-                      }
-                    })}
-                    placeholder="Es. 15"
-                    className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-[#e3a692]/50 focus:border-[#e3a692] outline-none bg-white text-sm"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </div>
-              )}
-            </div>
+            <button
+              key={space}
+              onClick={() => toggleExtra(space)}
+              className={`flex items-center justify-between p-2.5 rounded-xl border-2 transition-all ${formData.extraSpaces.includes(space) ? 'border-[#e3a692] bg-[#fdf8f6]' : 'border-gray-100'
+                }`}
+            >
+              <span className={`text-xs font-semibold ${formData.extraSpaces.includes(space) ? 'text-gray-900' : 'text-gray-600'}`}>{space}</span>
+              <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${formData.extraSpaces.includes(space) ? 'bg-[#e3a692] border-[#e3a692]' : 'border-gray-200'
+                }`}>
+                {formData.extraSpaces.includes(space) && <Check size={10} className="text-white" />}
+              </div>
+            </button>
           ))}
         </div>
       </div>
@@ -492,7 +460,7 @@ function Step7({ formData, update }: { formData: FormData, update: (u: Partial<F
       </div>
 
       <div className="space-y-3 mt-8">
-        {MOTIVATION_OPTIONS.map(opt => (
+        {MOTIVATION_OPTIONS.filter(opt => opt.label !== 'Sono un agente / operatore').map(opt => (
           <div key={opt.label} className="relative">
             <button
               onClick={() => update({ motivation: opt.label })}
@@ -843,7 +811,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
           <div>
             <p className="text-xs text-[#d97d6a] font-black uppercase tracking-wider mb-1">🔥 Molto richiesto</p>
             <p className="text-sm font-medium text-gray-700 leading-relaxed">
-              <span className="font-bold text-gray-900">490+ persone</span> hanno valutato il loro immobile nell'ultimo mese.
+              <span className="font-bold text-gray-900">89+ persone</span> hanno valutato il loro immobile nell'ultimo mese.
             </p>
           </div>
         </div>

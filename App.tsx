@@ -31,7 +31,7 @@ declare global {
 export default function App() {
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(window.location.pathname === '/pagina_ringraziamento');
-  const totalSteps = 6;
+  const totalSteps = 5;
 
   // Helper to track events
   const trackEvent = (eventId: string, value?: any) => {
@@ -103,9 +103,9 @@ export default function App() {
       case 1: return !!formData.address && !!formData.propertyType;
       case 2: return formData.surface !== '' && formData.rooms !== '' && formData.bathrooms !== '';
       case 3: return formData.floor !== '';
-      case 4: return (formData.constructionYear !== '' || formData.constructionYearUnknown) && formData.energyClass !== null && formData.heatingType !== '';
-      case 5: return formData.condition !== null && formData.hasElevator !== null;
-      case 6: return formData.motivation !== null;
+      // Step 4 (Characteristics) removed
+      case 4: return formData.condition !== null && formData.hasElevator !== null;
+      case 5: return formData.motivation !== null;
       default: return true;
     }
   };
@@ -115,10 +115,10 @@ export default function App() {
       case 1: return <Step1 formData={formData} update={updateFormData} />;
       case 2: return <Step3 formData={formData} update={updateFormData} />;
       case 3: return <Step4 formData={formData} update={updateFormData} />;
-      case 4: return <Step5 formData={formData} update={updateFormData} />;
-      case 5: return <Step6 formData={formData} update={updateFormData} />;
-      case 6: return <Step7 formData={formData} update={updateFormData} />;
-      case 7: return <StepFinal formData={formData} update={updateFormData} trackEvent={trackEvent} onSuccess={() => { window.history.pushState({}, '', '/pagina_ringraziamento'); setIsSuccess(true); }} />;
+      // Step 5 removed
+      case 4: return <Step6 formData={formData} update={updateFormData} />;
+      case 5: return <Step7 formData={formData} update={updateFormData} />;
+      case 6: return <StepFinal formData={formData} update={updateFormData} trackEvent={trackEvent} onSuccess={() => { window.history.pushState({}, '', '/pagina_ringraziamento'); setIsSuccess(true); }} />;
       default: return null;
     }
   };
@@ -143,9 +143,8 @@ export default function App() {
                     {step === 1 && "Iniziamo!"}
                     {step === 2 && "Ottimo inizio!"}
                     {step === 3 && "Continua così!"}
-                    {step === 4 && "Sei a metà!"}
-                    {step === 5 && "Quasi fatto!"}
-                    {step === 6 && "Ultimo sforzo!"}
+                    {step === 4 && "Quasi fatto!"}
+                    {step === 5 && "Ultimo sforzo!"}
                   </span>
                   <span className="text-xs text-gray-400 font-medium">
                     {Math.round((step / totalSteps) * 100)}%
@@ -386,74 +385,7 @@ function Step4({ formData, update }: { formData: FormData, update: (u: Partial<F
   );
 }
 
-function Step5({ formData, update }: { formData: FormData, update: (u: Partial<FormData>) => void }) {
-  return (
-    <div className="space-y-8">
-      <div className="text-center space-y-4">
-        <div className="text-center space-y-4">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900">🏗️ Dettagli dell'immobile</h2>
-          <p className="text-sm text-gray-500">Anno, classe energetica e tipo di riscaldamento</p>
-        </div>
-      </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-bold text-gray-700">Anno di costruzione</label>
-        <div className="flex gap-4 items-center">
-          <input
-            type="number"
-            value={formData.constructionYear}
-            disabled={formData.constructionYearUnknown}
-            onChange={(e) => update({ constructionYear: e.target.value })}
-            placeholder="Es. 1985"
-            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#e3a692]/50 focus:border-[#e3a692] outline-none disabled:bg-gray-100 disabled:text-gray-400 text-base"
-          />
-          <label className="flex items-center gap-2 cursor-pointer whitespace-nowrap">
-            <input
-              type="checkbox"
-              checked={formData.constructionYearUnknown}
-              onChange={(e) => update({
-                constructionYearUnknown: e.target.checked,
-                constructionYear: e.target.checked ? '' : formData.constructionYear
-              })}
-              className="w-5 h-5 rounded border-gray-300 text-[#e3a692] focus:ring-[#e3a692]"
-            />
-            <span className="text-sm text-gray-600">Non ricordo</span>
-          </label>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <label className="text-sm font-bold text-gray-700">Classe energetica</label>
-        <div className="grid grid-cols-4 gap-2">
-          {ENERGY_CLASSES.map(cls => (
-            <button
-              key={cls}
-              onClick={() => update({ energyClass: cls as EnergyClass })}
-              className={`py-2.5 rounded-xl border-2 font-semibold text-xs transition-all ${formData.energyClass === cls ? 'border-[#e3a692] bg-[#fdf8f6] text-[#e3a692]' : 'border-gray-100 text-gray-600'
-                } ${cls === 'Non lo so' ? 'col-span-2' : ''}`}
-            >
-              {cls}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <label className="text-sm font-bold text-gray-700">Tipo di riscaldamento</label>
-        <select
-          value={formData.heatingType}
-          onChange={(e) => update({ heatingType: e.target.value })}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#e3a692]/50 focus:border-[#e3a692] outline-none bg-white text-base"
-        >
-          <option value="">Seleziona tipo di riscaldamento</option>
-          <option value="Autonomo">Autonomo</option>
-          <option value="Centralizzato">Centralizzato</option>
-          <option value="Pompa di calore">Pompa di calore</option>
-        </select>
-      </div>
-    </div>
-  );
-}
 
 function Step6({ formData, update }: { formData: FormData, update: (u: Partial<FormData>) => void }) {
   const toggleExtra = (space: string) => {
@@ -644,19 +576,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
       "Da ristrutturare": "da_ristrutturare",
     };
 
-    const energyClassMap: Record<string, string> = {
-      "A4": "classe_a_plus_a",
-      "A3": "classe_a_plus_a",
-      "A2": "classe_a_plus_a",
-      "A1": "classe_a_plus_a",
-      "B": "classe_b_c",
-      "C": "classe_b_c",
-      "D": "classe_d_e",
-      "E": "classe_d_e",
-      "F": "classe_f_g",
-      "G": "classe_f_g",
-      "Non lo so": "",
-    };
+
 
     const extraSpacesMap: Record<string, string> = {
       "Box auto": "box",
@@ -709,12 +629,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
     else if (cond === "Buono abitabile") leadScore += 6;
     else if (cond === "Da ristrutturare") leadScore += 2;
 
-    // Classe Energetica (8 pts)
-    const ec = formData.energyClass || "";
-    if (["A4", "A3", "A2", "A1"].includes(ec)) leadScore += 8;
-    else if (["B", "C"].includes(ec)) leadScore += 6;
-    else if (["D", "E"].includes(ec)) leadScore += 4;
-    else if (["F", "G"].includes(ec)) leadScore += 2;
+
 
     // Superficie (8 pts)
     if (surfaceNum >= 120) leadScore += 8;
@@ -785,36 +700,37 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
     try {
       if (supabase) {
         console.log("💾 Saving to Supabase...");
+        const floorNum = formData.floor === 'Terra' ? 0 : parseInt(formData.floor) || 0;
         const { error: dbError } = await supabase
           .from('leads')
           .insert([
             {
-              first_name: formData.firstName,
-              last_name: formData.lastName,
+              nome: `${formData.firstName} ${formData.lastName}`.trim(),
               email: formData.email,
-              phone: formData.phone,
-              address: formData.address,
-              motivation: formData.motivation,
-              property_type: formData.propertyType,
-              condition: formData.condition,
-              energy_class: formData.energyClass,
-              surface: Number(formData.surface) || 0,
-              rooms: formData.rooms,
-              bathrooms: formData.bathrooms,
-              floor: formData.floor,
-              has_elevator: formData.hasElevator,
-              extra_spaces: formData.extraSpaces.join(", "),
-              lead_score: leadScore,
-              lead_category: leadCategory,
+              telefono: formData.phone,
+              indirizzo: formData.address,
+              motivazione: formData.motivation,
+              tipologia: formData.propertyType,
+              condizione: formData.condition,
+              classe_energetica: formData.energyClass,
+              superficie: Number(formData.surface) || 0,
+              locali: parseInt(formData.rooms) || 0,
+              bagni: parseInt(formData.bathrooms) || 0,
+              piano: floorNum,
+              ascensore: formData.hasElevator,
+              extra: formData.extraSpaces,
+              punteggio: leadScore,
+              lead_quality: leadCategory,
               landing_page_url: window.location.href,
               utm_source: utmSource,
               utm_medium: utmMedium,
               utm_campaign: utmCampaign,
+              source: referrerUrl || 'direct',
             }
           ]);
 
         if (dbError) {
-          console.error('❌ Supabase Error:', dbError);
+          console.error('❌ Supabase Error:', dbError.message, dbError.details, dbError.hint, dbError.code);
         } else {
           console.log('✅ Lead saved to Supabase successfully!');
         }
@@ -955,9 +871,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
           <input type="hidden" name="rooms" value={formData.rooms} />
           <input type="hidden" name="bathrooms" value={formData.bathrooms} />
           <input type="hidden" name="floor" value={formData.floor} />
-          <input type="hidden" name="construction_year" value={formData.constructionYear} />
-          <input type="hidden" name="energy_class" value={formData.energyClass || ''} />
-          <input type="hidden" name="heating_type" value={formData.heatingType} />
+
           <input type="hidden" name="condition" value={formData.condition || ''} />
           <input type="hidden" name="has_elevator" value={formData.hasElevator ? 'Yes' : 'No'} />
           <input type="hidden" name="extra_spaces" value={formData.extraSpaces.join(', ')} />

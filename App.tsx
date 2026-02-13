@@ -6,9 +6,14 @@ import { PROPERTY_TYPES, ENERGY_CLASSES, CONDITION_OPTIONS, MOTIVATION_OPTIONS }
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase Client (Client-side)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Initialize Supabase Client (Client-side)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+// Only initialize if we have credentials, otherwise null (prevents crash)
+const supabase = (supabaseUrl && supabaseKey)
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
 const LOGO_URL = "/logo.png"; // Local logo file
 
@@ -776,40 +781,43 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
 
     // --- 1. Save to Supabase (Client-side) ---
     try {
-      console.log("💾 Saving to Supabase...");
-      const { error: dbError } = await supabase
-        .from('leads')
-        .insert([
-          {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            email: formData.email,
-            phone: formData.phone,
-            address: formData.address,
-            motivation: formData.motivation,
-            property_type: formData.propertyType,
-            condition: formData.condition,
-            energy_class: formData.energyClass,
-            surface: Number(formData.surface) || 0,
-            rooms: formData.rooms,
-            bathrooms: formData.bathrooms,
-            floor: formData.floor,
-            has_elevator: formData.hasElevator,
-            extra_spaces: formData.extraSpaces.join(", "),
-            lead_score: leadScore,
-            lead_category: leadCategory,
-            landing_page_url: window.location.href,
-            utm_source: utmSource,
-            utm_medium: utmMedium,
-            utm_campaign: utmCampaign,
-          }
-        ]);
+      if (supabase) {
+        console.log("💾 Saving to Supabase...");
+        const { error: dbError } = await supabase
+          .from('leads')
+          .insert([
+            {
+              first_name: formData.firstName,
+              last_name: formData.lastName,
+              email: formData.email,
+              phone: formData.phone,
+              address: formData.address,
+              motivation: formData.motivation,
+              property_type: formData.propertyType,
+              condition: formData.condition,
+              energy_class: formData.energyClass,
+              surface: Number(formData.surface) || 0,
+              rooms: formData.rooms,
+              bathrooms: formData.bathrooms,
+              floor: formData.floor,
+              has_elevator: formData.hasElevator,
+              extra_spaces: formData.extraSpaces.join(", "),
+              lead_score: leadScore,
+              lead_category: leadCategory,
+              landing_page_url: window.location.href,
+              utm_source: utmSource,
+              utm_medium: utmMedium,
+              utm_campaign: utmCampaign,
+            }
+          ]);
 
-      if (dbError) {
-        console.error('❌ Supabase Error:', dbError);
-        // We continue to email even if DB fails, or vice versa
+        if (dbError) {
+          console.error('❌ Supabase Error:', dbError);
+        } else {
+          console.log('✅ Lead saved to Supabase successfully!');
+        }
       } else {
-        console.log('✅ Lead saved to Supabase successfully!');
+        console.warn("⚠️ Supabase not initialized (missing credentials). Skipping DB save.");
       }
     } catch (dbEx) {
       console.error('❌ Supabase Exception:', dbEx);

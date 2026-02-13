@@ -795,44 +795,22 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
   }
 
   return (
-    <div className="space-y-8">
-      <div className="text-center space-y-4">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900">📝 Ultimi Dettagli!</h2>
-        <p className="text-sm text-gray-500">Dove inviamo la tua valutazione personalizzata?</p>
+    <div className="space-y-5">
+      {/* Banner social proof */}
+      <div className="flex items-center gap-3 px-3 py-2 bg-[#fdf8f6] rounded-xl border border-[#e3a692]/20">
+        <div className="flex -space-x-2 shrink-0">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="w-5 h-5 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
+              <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 20}`} alt="User" />
+            </div>
+          ))}
+        </div>
+        <p className="text-[11px] text-gray-600"><span className="font-bold">89+ persone</span> hanno richiesto una valutazione questo mese</p>
       </div>
 
-      <div className="bg-gradient-to-br from-[#fdf8f6] to-[#fff] p-4 rounded-2xl border-2 border-[#e3a692]/30 shadow-lg shadow-[#e3a692]/10 space-y-4 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-3 opacity-10">
-          <TrendingUp size={100} color="#e3a692" />
-        </div>
-
-        <div className="flex items-start gap-4 relative z-10">
-          <div className="p-3 bg-[#e3a692] text-white rounded-xl shadow-md transform rotate-3">
-            <Users size={24} />
-          </div>
-          <div>
-            <p className="text-xs text-[#d97d6a] font-black uppercase tracking-wider mb-1">🔥 Molto richiesto</p>
-            <p className="text-sm font-medium text-gray-700 leading-relaxed">
-              <span className="font-bold text-gray-900">89+ persone</span> hanno valutato il loro immobile nell'ultimo mese.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 pt-2 relative z-10">
-          <div className="flex -space-x-2">
-            {[1, 2, 3].map(i => (
-              <div key={i} className={`w-6 h-6 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-[8px] font-bold text-gray-500 overflow-hidden`}>
-                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 20}`} alt="User" />
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-gray-500 font-medium">Unisciti a loro oggi!</p>
-        </div>
-
-      </div>
-
-      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-        <h3 className="text-xl font-bold text-gray-900 mb-6">Ricevi la tua valutazione</h3>
+      <div>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">📝 Ultimi Dettagli</h2>
+        <p className="text-sm text-gray-500 mb-5">Dove inviamo la tua valutazione personalizzata?</p>
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Hidden Fields for HubSpot */}
           <input type="hidden" name="address" value={formData.address} />

@@ -797,15 +797,8 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
   return (
     <div className="space-y-5">
       {/* Banner social proof */}
-      <div className="flex items-center gap-3 px-3 py-2 bg-[#fdf8f6] rounded-xl border border-[#e3a692]/20">
-        <div className="flex -space-x-2 shrink-0">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="w-5 h-5 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
-              <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 20}`} alt="User" />
-            </div>
-          ))}
-        </div>
-        <p className="text-[11px] text-gray-600"><span className="font-bold">89+ persone</span> hanno richiesto una valutazione questo mese</p>
+      <div className="px-3 py-2 bg-[#fdf8f6] rounded-xl border border-[#e3a692]/20 text-center">
+        <p className="text-[11px] text-gray-600">🔥 <span className="font-bold">89+ persone</span> hanno richiesto una valutazione questo mese</p>
       </div>
 
       <div>

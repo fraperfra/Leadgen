@@ -20,12 +20,12 @@ import {
 import { PropertyType, Motivation, Condition } from './types';
 
 export const PROPERTY_TYPES: { label: PropertyType; icon: React.ReactNode }[] = [
-  { label: 'Appartamento', icon: <Building2 className="w-8 h-8" /> },
-  { label: 'Villa indipendente', icon: <Home className="w-8 h-8" /> },
-  { label: 'Loft / Open Space', icon: <Warehouse className="w-8 h-8" /> },
-  { label: 'Mansarda', icon: <ArrowUp className="w-8 h-8" /> },
-  { label: 'Attico', icon: <Layout className="w-8 h-8" /> },
-  { label: 'Villetta a schiera', icon: <Rows className="w-8 h-8" /> },
+  { label: 'Appartamento', icon: <Building2 className="w-6 h-6" /> },
+  { label: 'Villa indipendente', icon: <Home className="w-6 h-6" /> },
+  { label: 'Loft / Open Space', icon: <Warehouse className="w-6 h-6" /> },
+  { label: 'Mansarda', icon: <ArrowUp className="w-6 h-6" /> },
+  { label: 'Attico', icon: <Layout className="w-6 h-6" /> },
+  { label: 'Villetta a schiera', icon: <Rows className="w-6 h-6" /> },
 ];
 
 export const CONDITION_OPTIONS: { label: Condition; icon: React.ReactNode }[] = [

@@ -251,14 +251,14 @@ function Step1({ formData, update }: { formData: FormData, update: (u: Partial<F
   };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       {/* Address Section */}
-      <div className="space-y-6">
-        <div className="text-center space-y-4">
+      <div className="space-y-4">
+        <div className="text-center space-y-2">
           <h2 className="text-xl md:text-2xl font-bold text-gray-900">📍 Dove si trova l'immobile?</h2>
           <p className="text-sm text-gray-500">Iniziamo dalla base: dove si trova la tua casa?</p>
         </div>
-        <div className="relative mt-8">
+        <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
           <input
             type="text"
@@ -279,17 +279,17 @@ function Step1({ formData, update }: { formData: FormData, update: (u: Partial<F
       </div>
 
       {/* Property Type Section (Moved from Step 2) */}
-      <div className="space-y-6 pt-4 border-t border-gray-50">
-        <div className="text-center space-y-4">
+      <div className="space-y-4 pt-4 border-t border-gray-50">
+        <div className="text-center space-y-2">
           <h2 className="text-xl md:text-2xl font-bold text-gray-900">🏠 Tipologia</h2>
           <p className="text-sm text-gray-500">Ogni casa ha la sua storia, qual è la tua?</p>
         </div>
-        <div className="grid grid-cols-3 gap-3 mt-8">
+        <div className="grid grid-cols-3 gap-2">
           {PROPERTY_TYPES.map((type) => (
             <button
               key={type.label}
               onClick={() => update({ propertyType: type.label })}
-              className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all gap-2 aspect-square ${formData.propertyType === type.label
+              className={`flex flex-col items-center justify-center p-2 rounded-xl border-2 transition-all gap-1 ${formData.propertyType === type.label
                 ? 'border-[#e3a692] bg-[#fdf8f6]'
                 : 'border-gray-100 hover:border-gray-200'
                 }`}

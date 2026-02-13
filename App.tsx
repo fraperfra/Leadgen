@@ -777,9 +777,9 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
             href="/assets/Checklist.pdf"
             download
             onClick={() => trackEvent('checklist_download', { score: 10 })}
-            className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-[#d97d6a] text-white rounded-2xl font-black text-lg shadow-xl shadow-[#d97d6a]/30 hover:bg-[#c66c5a] hover:shadow-2xl hover:scale-105 transition-all transform"
+            className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-[#d97d6a] text-white rounded-xl font-bold text-sm shadow-lg hover:bg-[#c66c5a] hover:scale-105 transition-all transform"
           >
-            <Download size={24} />
+            <Download size={18} />
             Scarica Checklist Vendita 🎁
           </a>
 

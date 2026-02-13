@@ -763,7 +763,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
         <a href="tel:3274911031" className="text-2xl font-bold text-[#e3a692] hover:underline">
           📞 3274911031
         </a>
-        <p className="text-lg text-gray-600 max-w-xs mx-auto leading-relaxed">
+        <p className="text-sm text-gray-500 max-w-xs mx-auto leading-relaxed">
           Nel frattempo ti ho preparato una <strong>CheckList</strong> di tutta la documentazione che serve per <strong>Vendere velocemente</strong> il tuo immobile
         </p>
         <div className="pt-6 space-y-3 w-full max-w-xs mx-auto">
@@ -772,9 +772,9 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
             href="/assets/Checklist.pdf"
             download
             onClick={() => trackEvent('checklist_download', { score: 10 })}
-            className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-[#e3a692] to-[#d97d6a] text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all transform"
+            className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-[#d97d6a] text-white rounded-2xl font-black text-lg shadow-xl shadow-[#d97d6a]/30 hover:bg-[#c66c5a] hover:shadow-2xl hover:scale-105 transition-all transform"
           >
-            <Download size={20} />
+            <Download size={24} />
             Scarica Checklist Vendita 🎁
           </a>
 

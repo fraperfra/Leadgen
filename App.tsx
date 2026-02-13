@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Search, Home, Check, MapPin, Loader2, Users,
 import { FormData, PropertyType, EnergyClass, Condition, Motivation } from './types';
 import { PROPERTY_TYPES, ENERGY_CLASSES, CONDITION_OPTIONS, MOTIVATION_OPTIONS } from './constants';
 import { createClient } from '@supabase/supabase-js';
+import confetti from 'canvas-confetti';
 
 // Initialize Supabase Client (Client-side)
 // Initialize Supabase Client (Client-side)
@@ -749,6 +750,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
       setLoading(false);
       setSuccess(true);
       onSuccess();
+      confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
     } catch (error: any) {
       console.error("❌ Error sending email:", error);
       setErrorMsg(`Errore: ${error.message || 'Problema di connessione. Riprova.'}`);
@@ -760,13 +762,13 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
   if (success) {
     return (
       <div className="flex flex-col items-center justify-center text-center space-y-6 pt-12">
-        <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">Perfetto!</h2>
-        <p className="text-lg text-gray-600 max-w-xs mx-auto leading-relaxed">
+        <h2 className="text-3xl font-black text-gray-900 tracking-tight">✅ Perfetto!</h2>
+        <p className="text-sm text-gray-600 max-w-xs mx-auto leading-relaxed">
           Abbiamo ricevuto la tua richiesta.<br />
           Ti chiameremo entro 30 minuti da questo numero
         </p>
-        <a href="tel:3274911031" className="text-2xl font-bold text-[#e3a692] hover:underline">
-          📞 3274911031
+        <a href="tel:3274911031" className="text-lg font-bold text-[#e3a692] hover:underline">
+          📞 327 491 1031
         </a>
         <p className="text-sm text-gray-500 max-w-xs mx-auto leading-relaxed">
           Nel frattempo ti ho preparato una <strong>CheckList</strong> di tutta la documentazione che serve per <strong>Vendere velocemente</strong> il tuo immobile

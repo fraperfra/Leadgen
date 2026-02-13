@@ -498,7 +498,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(true);
 
   // Track page view for final step
   React.useEffect(() => {

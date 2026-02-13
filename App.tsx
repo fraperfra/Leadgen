@@ -33,9 +33,13 @@ export default function App() {
   if (window.location.pathname === '/privacy-policy') {
     return <PrivacyPolicy />;
   }
+  if (window.location.pathname === '/pagina_ringraziamento') {
+    window.location.href = '/';
+    return null;
+  }
 
   const [step, setStep] = useState(1);
-  const [isSuccess, setIsSuccess] = useState(window.location.pathname === '/pagina_ringraziamento');
+  const [isSuccess, setIsSuccess] = useState(false);
   const totalSteps = 4;
 
   // Helper to track events

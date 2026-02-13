@@ -1,12 +1,15 @@
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Resend initialized inside handler to avoid crash on missing key at startup
 
 // Initialize Supabase Client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+// Safe check for server-side initialization
+const supabase = (supabaseUrl && supabaseKey)
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
 export default async function handler(request, response) {
   // CORS configuration
@@ -42,6 +45,14 @@ export default async function handler(request, response) {
       leadScore, leadCategory,
       landingPageUrl, utmSource
     } = data;
+
+    // Initialize Resend
+    const resendApiKey = process.env.RESEND_API_KEY;
+    if (!resendApiKey) {
+      console.error('❌ Missing RESEND_API_KEY');
+      return response.status(500).json({ error: 'Missing Email Configuration' });
+    }
+    const resend = new Resend(resendApiKey);
 
     // Send email via Resend
     const { data: emailData, error } = await resend.emails.send({
@@ -127,40 +138,44 @@ export default async function handler(request, response) {
 
     // --- Supabase Insert ---
     try {
-      const { error: dbError } = await supabase
-        .from('leads')
-        .insert([
-          {
-            first_name: firstName,
-            last_name: lastName,
-            email: email,
-            phone: phone,
-            address: address,
-            motivation: motivation,
-            property_type: propertyType,
-            condition: condition,
-            energy_class: energyClass,
-            surface: Number(surface) || 0,
-            rooms: rooms,
-            bathrooms: bathrooms,
-            floor: floor,
-            has_elevator: hasElevator === 'Yes' || hasElevator === true,
-            extra_spaces: extraSpaces,
-            lead_score: leadScore,
-            lead_category: leadCategory,
-            landing_page_url: landingPageUrl,
-            utm_source: utmSource,
-            // Add other fields if present in schema/data
-            // notes: ...
-          }
-        ]);
+      if (supabase) {
+        const { error: dbError } = await supabase
+          .from('leads')
+          .insert([
+            {
+              first_name: firstName,
+              last_name: lastName,
+              email: email,
+              phone: phone,
+              address: address,
+              motivation: motivation,
+              property_type: propertyType,
+              condition: condition,
+              energy_class: energyClass,
+              surface: Number(surface) || 0,
+              rooms: rooms,
+              bathrooms: bathrooms,
+              floor: floor,
+              has_elevator: hasElevator === 'Yes' || hasElevator === true,
+              extra_spaces: extraSpaces,
+              lead_score: leadScore,
+              lead_category: leadCategory,
+              landing_page_url: landingPageUrl,
+              utm_source: utmSource,
+              // Add other fields if present in schema/data
+              // notes: ...
+            }
+          ]);
 
-      if (dbError) {
-        console.error('Supabase Error:', dbError);
-        // We don't fail the request if email sent success, but we log it.
-        // Alternatively, return warning.
+        if (dbError) {
+          console.error('Supabase Error:', dbError);
+          // We don't fail the request if email sent success, but we log it.
+          // Alternatively, return warning.
+        } else {
+          console.log('✅ Lead saved to Supabase');
+        }
       } else {
-        console.log('✅ Lead saved to Supabase');
+        console.warn('⚠️ Supabase skipped in API (missing creds)');
       }
     } catch (dbEx) {
       console.error('Supabase Exception:', dbEx);

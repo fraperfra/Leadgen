@@ -29,6 +29,10 @@ declare global {
 }
 
 export default function App() {
+  if (window.location.pathname === '/privacy-policy') {
+    return <PrivacyPolicy />;
+  }
+
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(window.location.pathname === '/pagina_ringraziamento');
   const totalSteps = 4;
@@ -928,6 +932,134 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
           </button>
         </form>
       </div>
+    </div>
+  );
+}
+
+function PrivacyPolicy() {
+  return (
+    <div className="min-h-screen bg-white max-w-lg mx-auto shadow-xl">
+      <header className="pt-4 pb-4 flex flex-col items-center border-b border-gray-100">
+        <a href="/">
+          <img src="/assets/Logo Diba Nero.png" alt="Logo Diba" className="h-10 w-auto object-contain" />
+        </a>
+      </header>
+
+      <main className="px-6 py-8 space-y-6">
+        <h1 className="text-2xl font-black text-gray-900">Privacy Policy</h1>
+        <p className="text-xs text-gray-400">Ultimo aggiornamento: Febbraio 2026</p>
+
+        <div className="space-y-5 text-sm text-gray-600 leading-relaxed">
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-gray-800">1. Titolare del Trattamento</h2>
+            <p>
+              Il Titolare del trattamento dei dati personali è <strong>Diba Real Estate</strong>, con sede in Italia.
+              Per qualsiasi richiesta relativa alla privacy è possibile contattarci all'indirizzo email: <a href="mailto:info@dibare.it" className="text-[#d97d6a] underline font-semibold">info@dibare.it</a>
+            </p>
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-gray-800">2. Dati Raccolti</h2>
+            <p>Attraverso il modulo di valutazione immobiliare raccogliamo i seguenti dati:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li><strong>Dati di contatto:</strong> nome, cognome, email, telefono</li>
+              <li><strong>Dati dell'immobile:</strong> indirizzo, tipologia, superficie, numero locali, piano, condizione, spazi extra</li>
+              <li><strong>Dati di navigazione:</strong> URL di provenienza, parametri UTM, pagina di atterraggio</li>
+            </ul>
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-gray-800">3. Finalità del Trattamento</h2>
+            <p>I dati personali sono trattati per le seguenti finalità:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Fornitura del servizio di valutazione immobiliare gratuita</li>
+              <li>Contatto telefonico o via email per comunicare la valutazione</li>
+              <li>Miglioramento dei nostri servizi e analisi statistiche aggregate</li>
+            </ul>
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-gray-800">4. Base Giuridica</h2>
+            <p>
+              Il trattamento dei dati si basa sul <strong>consenso esplicito</strong> dell'utente (Art. 6, par. 1, lett. a del GDPR)
+              e sull'<strong>esecuzione di misure precontrattuali</strong> (Art. 6, par. 1, lett. b del GDPR).
+            </p>
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-gray-800">5. Conservazione dei Dati</h2>
+            <p>
+              I dati personali saranno conservati per un periodo massimo di <strong>24 mesi</strong> dalla raccolta,
+              salvo diversa richiesta dell'interessato.
+            </p>
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-gray-800">6. Condivisione dei Dati</h2>
+            <p>I dati possono essere condivisi con:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li><strong>Supabase Inc.</strong> — per l'archiviazione sicura dei dati (server UE)</li>
+              <li><strong>Vercel Inc.</strong> — per l'hosting del sito web</li>
+              <li><strong>Resend</strong> — per l'invio di email transazionali</li>
+            </ul>
+            <p>I dati <strong>non vengono venduti</strong> a terzi per finalità di marketing.</p>
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-gray-800">7. Diritti dell'Interessato</h2>
+            <p>Ai sensi degli articoli 15-22 del GDPR, hai diritto a:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Accedere ai tuoi dati personali</li>
+              <li>Rettificare dati inesatti o incompleti</li>
+              <li>Richiedere la cancellazione dei dati</li>
+              <li>Limitare il trattamento</li>
+              <li>Richiedere la portabilità dei dati</li>
+              <li>Opporti al trattamento</li>
+              <li>Revocare il consenso in qualsiasi momento</li>
+            </ul>
+            <p>
+              Per esercitare questi diritti, contattaci a: <a href="mailto:info@dibare.it" className="text-[#d97d6a] underline font-semibold">info@dibare.it</a>
+            </p>
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-gray-800">8. Cookie</h2>
+            <p>
+              Il sito utilizza cookie tecnici necessari al funzionamento e cookie analitici di terze parti
+              (Google Analytics, Meta Pixel) per analisi statistiche anonime. Puoi gestire le preferenze
+              cookie attraverso le impostazioni del tuo browser.
+            </p>
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-gray-800">9. Sicurezza</h2>
+            <p>
+              Adottiamo misure tecniche e organizzative adeguate per proteggere i dati personali da
+              accessi non autorizzati, perdita o distruzione. Tutte le comunicazioni avvengono tramite
+              protocollo HTTPS crittografato.
+            </p>
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-gray-800">10. Contatti</h2>
+            <p>
+              Per domande o richieste relative alla presente Privacy Policy:<br />
+              <strong>Diba Real Estate</strong><br />
+              Email: <a href="mailto:info@dibare.it" className="text-[#d97d6a] underline font-semibold">info@dibare.it</a><br />
+              Tel: <a href="tel:3274911031" className="text-[#d97d6a] underline font-semibold">327 491 1031</a>
+            </p>
+          </section>
+        </div>
+
+        <div className="pt-6 pb-8">
+          <a
+            href="/"
+            className="flex items-center justify-center w-full py-3 bg-[#d97d6a] text-white rounded-xl font-bold hover:bg-[#c66c5a] transition-all"
+          >
+            ← Torna alla valutazione
+          </a>
+        </div>
+      </main>
     </div>
   );
 }

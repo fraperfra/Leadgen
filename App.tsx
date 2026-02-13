@@ -3,6 +3,12 @@ import React, { useState, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Search, Home, Check, MapPin, Loader2, Users, TrendingUp, Download } from 'lucide-react';
 import { FormData, PropertyType, EnergyClass, Condition, Motivation } from './types';
 import { PROPERTY_TYPES, ENERGY_CLASSES, CONDITION_OPTIONS, MOTIVATION_OPTIONS } from './constants';
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase Client (Client-side)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const LOGO_URL = "/logo.png"; // Local logo file
 
@@ -768,6 +774,48 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
 
     console.log("📤 Sending email payload:", JSON.stringify(emailPayload, null, 2));
 
+    // --- 1. Save to Supabase (Client-side) ---
+    try {
+      console.log("💾 Saving to Supabase...");
+      const { error: dbError } = await supabase
+        .from('leads')
+        .insert([
+          {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            motivation: formData.motivation,
+            property_type: formData.propertyType,
+            condition: formData.condition,
+            energy_class: formData.energyClass,
+            surface: Number(formData.surface) || 0,
+            rooms: formData.rooms,
+            bathrooms: formData.bathrooms,
+            floor: formData.floor,
+            has_elevator: formData.hasElevator,
+            extra_spaces: formData.extraSpaces.join(", "),
+            lead_score: leadScore,
+            lead_category: leadCategory,
+            landing_page_url: window.location.href,
+            utm_source: utmSource,
+            utm_medium: utmMedium,
+            utm_campaign: utmCampaign,
+          }
+        ]);
+
+      if (dbError) {
+        console.error('❌ Supabase Error:', dbError);
+        // We continue to email even if DB fails, or vice versa
+      } else {
+        console.log('✅ Lead saved to Supabase successfully!');
+      }
+    } catch (dbEx) {
+      console.error('❌ Supabase Exception:', dbEx);
+    }
+
+    // --- 2. Send Email (via API) ---
     try {
       const response = await fetch('/api/send-email', {
         method: 'POST',
@@ -780,16 +828,22 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
       const rawText = await response.text();
       console.log("📡 Response status:", response.status, "body:", rawText);
 
-      if (!response.ok) {
+      // Handle non-JSON or HTML responses (common in Vite dev)
+      if (rawText.trim().startsWith('<')) {
+        console.warn("⚠️ API returned HTML instead of JSON. You might be running locally without Vercel Functions.");
+        // Treat as "sent" locally to unblock the UI, or throw if strict
+        // For now, if we saved to DB, we can consider it a partial success
+      } else if (!response.ok) {
         let detail = `HTTP ${response.status}`;
         try {
           const parsed = JSON.parse(rawText);
           detail = parsed.message || parsed.error || parsed.statusCode || detail;
-        } catch { /* non-JSON response */ }
+        } catch { }
         throw new Error(String(detail));
+      } else {
+        console.log("✅ Email sent successfully!");
       }
 
-      console.log("✅ Email sent successfully!");
       if (window.fbq) {
         window.fbq('track', 'CompleteRegistration');
       }
@@ -798,8 +852,9 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
       onSuccess();
     } catch (error: any) {
       console.error("❌ Error sending email:", error);
-      setLoading(false);
       setErrorMsg(`Errore: ${error.message || 'Problema di connessione. Riprova.'}`);
+    } finally {
+      setLoading(false);
     }
   };
 

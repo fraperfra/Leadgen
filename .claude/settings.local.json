@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:leadgen-gilt.vercel.app)",
+      "Bash(gh api:*)",
+      "Bash(python:*)",
+      "WebFetch(domain:valutacasa.vercel.app)",
+      "Bash(npx vercel:*)"
+    ]
+  }
+}

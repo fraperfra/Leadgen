@@ -1,48 +1,54 @@
 import { Resend } from 'resend';
+import { createClient } from '@supabase/supabase-js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Initialize Supabase Client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 export default async function handler(request, response) {
-    // CORS configuration
-    response.setHeader('Access-Control-Allow-Credentials', true);
-    response.setHeader('Access-Control-Allow-Origin', '*');
-    response.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    response.setHeader(
-        'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-    );
+  // CORS configuration
+  response.setHeader('Access-Control-Allow-Credentials', true);
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  response.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
 
-    if (request.method === 'OPTIONS') {
-        response.status(200).end();
-        return;
+  if (request.method === 'OPTIONS') {
+    response.status(200).end();
+    return;
+  }
+
+  if (request.method !== 'POST') {
+    return response.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const data = request.body;
+
+    // Validate required fields
+    if (!data.email || !data.firstName) {
+      return response.status(400).json({ error: 'Missing required fields' });
     }
 
-    if (request.method !== 'POST') {
-        return response.status(405).json({ error: 'Method not allowed' });
-    }
+    const {
+      firstName, lastName, email, phone, address,
+      motivation, propertyType, condition, energyClass,
+      surface, rooms, bathrooms, floor, hasElevator, extraSpaces,
+      leadScore, leadCategory,
+      landingPageUrl, utmSource
+    } = data;
 
-    try {
-        const data = request.body;
-
-        // Validate required fields
-        if (!data.email || !data.firstName) {
-            return response.status(400).json({ error: 'Missing required fields' });
-        }
-
-        const {
-            firstName, lastName, email, phone, address,
-            motivation, propertyType, condition, energyClass,
-            surface, rooms, bathrooms, floor, hasElevator, extraSpaces,
-            leadScore, leadCategory,
-            landingPageUrl, utmSource
-        } = data;
-
-        // Send email via Resend
-        const { data: emailData, error } = await resend.emails.send({
-            from: 'Valutazione Immobiliare <onboarding@resend.dev>', // Default Resend testing domain
-            to: ['fracop98@gmail.com'],
-            subject: `🔥 Nuovo Lead ${leadCategory}: ${firstName} ${lastName} (${leadScore} pt)`,
-            html: `
+    // Send email via Resend
+    const { data: emailData, error } = await resend.emails.send({
+      from: 'Valutazione Immobiliare <onboarding@resend.dev>', // Default Resend testing domain
+      to: ['fracop98@gmail.com'],
+      subject: `🔥 Nuovo Lead ${leadCategory}: ${firstName} ${lastName} (${leadScore} pt)`,
+      html: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -112,16 +118,62 @@ export default async function handler(request, response) {
         </body>
         </html>
       `
-        });
+    });
 
-        if (error) {
-            console.error('Resend Error:', error);
-            return response.status(400).json(error);
-        }
-
-        return response.status(200).json(emailData);
-    } catch (err) {
-        console.error('Server Error:', err);
-        return response.status(500).json({ error: 'Internal Server Error' });
+    if (error) {
+      console.error('Resend Error:', error);
+      return response.status(400).json(error);
     }
+
+    // --- Supabase Insert ---
+    try {
+      const { error: dbError } = await supabase
+        .from('leads')
+        .insert([
+          {
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            phone: phone,
+            address: address,
+            motivation: motivation,
+            property_type: propertyType,
+            condition: condition,
+            energy_class: energyClass,
+            surface: Number(surface) || 0,
+            rooms: rooms,
+            bathrooms: bathrooms,
+            floor: floor,
+            has_elevator: hasElevator === 'Yes' || hasElevator === true,
+            extra_spaces: extraSpaces,
+            lead_score: leadScore,
+            lead_category: leadCategory,
+            landing_page_url: landingPageUrl,
+            utm_source: utmSource,
+            // Add other fields if present in schema/data
+            // notes: ...
+          }
+        ]);
+
+      if (dbError) {
+        console.error('Supabase Error:', dbError);
+        // We don't fail the request if email sent success, but we log it.
+        // Alternatively, return warning.
+      } else {
+        console.log('✅ Lead saved to Supabase');
+      }
+    } catch (dbEx) {
+      console.error('Supabase Exception:', dbEx);
+    }
+
+    if (error) {
+      console.error('Resend Error:', error);
+      return response.status(400).json(error);
+    }
+
+    return response.status(200).json(emailData);
+  } catch (err) {
+    console.error('Server Error:', err);
+    return response.status(500).json({ error: 'Internal Server Error' });
+  }
 }

@@ -33,11 +33,6 @@ export default function App() {
   if (window.location.pathname === '/privacy-policy') {
     return <PrivacyPolicy />;
   }
-  if (window.location.pathname === '/pagina_ringraziamento') {
-    window.location.href = '/';
-    return null;
-  }
-
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
   const totalSteps = 4;
@@ -123,7 +118,7 @@ export default function App() {
       case 2: return <Step3 formData={formData} update={updateFormData} />;
       case 3: return <StepFloorAndDetails formData={formData} update={updateFormData} />;
       case 4: return <Step7 formData={formData} update={updateFormData} />;
-      case 5: return <StepFinal formData={formData} update={updateFormData} trackEvent={trackEvent} onSuccess={() => { window.history.pushState({}, '', '/pagina_ringraziamento'); setIsSuccess(true); }} />;
+      case 5: return <StepFinal formData={formData} update={updateFormData} trackEvent={trackEvent} onSuccess={() => setIsSuccess(true)} />;
       default: return null;
     }
   };

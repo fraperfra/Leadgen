@@ -1,5 +1,6 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import Clarity from '@microsoft/clarity';
 import { ChevronLeft, ChevronRight, Search, Home, Check, MapPin, Loader2, Users, TrendingUp, Download } from 'lucide-react';
 import { FormData, PropertyType, EnergyClass, Condition, Motivation } from './types';
 import { PROPERTY_TYPES, ENERGY_CLASSES, CONDITION_OPTIONS, MOTIVATION_OPTIONS } from './constants';
@@ -61,9 +62,7 @@ export default function App() {
       }
     }
     // Microsoft Clarity
-    if (window.clarity) {
-      window.clarity('event', eventId);
-    }
+    Clarity.event(eventId);
   };
 
   const [formData, setFormData] = useState<FormData>({
@@ -88,30 +87,40 @@ export default function App() {
     phone: ''
   });
 
+  const STEP_NAMES = ['indirizzo_tipologia', 'dimensioni', 'dettagli', 'motivazione', 'contatti'];
+
+  const updateStepTracking = useCallback((newStep: number) => {
+    const stepName = STEP_NAMES[newStep - 1] ?? `step_${newStep}`;
+    window.location.hash = `step-${newStep}`;
+    Clarity.setTag('funnel_step', stepName);
+  }, []);
+
   const nextStep = useCallback(() => {
     if (step < totalSteps + 1) {
-      // Track funnel step completion
+      const stepName = STEP_NAMES[step - 1] ?? `step_${step}`;
       if (window.gtag) {
         window.gtag('event', 'funnel_step_complete', {
           event_category: 'Funnel',
           step_number: step,
-          step_name: ['indirizzo_tipologia', 'dimensioni', 'dettagli', 'motivazione'][step - 1] ?? `step_${step}`,
+          step_name: stepName,
         });
       }
-      if (window.clarity) {
-        window.clarity('event', `step_${step}_completato`);
-      }
-      setStep(prev => prev + 1);
+      Clarity.event(`step_${step}_completato`);
+      const newStep = step + 1;
+      setStep(newStep);
+      updateStepTracking(newStep);
       window.scrollTo(0, 0);
     }
-  }, [step, totalSteps]);
+  }, [step, totalSteps, updateStepTracking]);
 
   const prevStep = useCallback(() => {
     if (step > 1) {
-      setStep(prev => prev - 1);
+      const newStep = step - 1;
+      setStep(newStep);
+      updateStepTracking(newStep);
       window.scrollTo(0, 0);
     }
-  }, [step]);
+  }, [step, updateStepTracking]);
 
   const updateFormData = (updates: Partial<FormData>) => {
     setFormData(prev => ({ ...prev, ...updates }));

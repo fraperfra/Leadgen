@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Search, Home, Check, MapPin, Loader2, Users, TrendingUp, Download } from 'lucide-react';
 import { FormData, PropertyType, EnergyClass, Condition, Motivation } from './types';
 import { PROPERTY_TYPES, ENERGY_CLASSES, CONDITION_OPTIONS, MOTIVATION_OPTIONS } from './constants';
@@ -217,6 +217,65 @@ export default function App() {
 
 function Step1({ formData, update }: { formData: FormData, update: (u: Partial<FormData>) => void }) {
   const [isLocating, setIsLocating] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const searchAddress = async (query: string) => {
+    if (query.length < 3) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1&countrycodes=it`
+      );
+      const data = await res.json();
+      const formatted: string[] = data.map((item: any) => {
+        const addr = item.address;
+        const road = addr.road || addr.pedestrian || addr.path || '';
+        const number = addr.house_number || '';
+        const city = addr.city || addr.town || addr.village || addr.municipality || '';
+        const province = addr.county || '';
+        if (road && city) {
+          return `${road}${number ? ' ' + number : ''}, ${city}${province ? ', ' + province : ''}`;
+        }
+        return item.display_name.split(',').slice(0, 3).join(',').trim();
+      });
+      setSuggestions(formatted);
+      setShowSuggestions(formatted.length > 0);
+    } catch {
+      setSuggestions([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleAddressChange = (value: string) => {
+    update({ address: value });
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => searchAddress(value), 350);
+  };
+
+  const handleSelectSuggestion = (suggestion: string) => {
+    update({ address: suggestion });
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
 
   const handleGeolocation = () => {
     if (!navigator.geolocation) {
@@ -235,14 +294,11 @@ function Step1({ formData, update }: { formData: FormData, update: (u: Partial<F
           const data = await response.json();
 
           if (data && data.display_name) {
-            // Simplify address if possible, or use full display_name
             const address = data.address;
             const street = address.road || '';
             const number = address.house_number || '';
             const city = address.city || address.town || address.village || '';
-
             const constructedAddress = street ? `${street} ${number}, ${city}` : data.display_name;
-
             update({ address: constructedAddress });
           }
         } catch (error) {
@@ -268,13 +324,15 @@ function Step1({ formData, update }: { formData: FormData, update: (u: Partial<F
           <h2 className="text-xl md:text-2xl font-bold text-gray-900">📍 Dove si trova l'immobile?</h2>
           <p className="text-sm text-gray-500">Iniziamo dalla base: dove si trova la tua casa?</p>
         </div>
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+        <div className="relative" ref={containerRef}>
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
           <input
             type="text"
             value={formData.address}
-            onChange={(e) => update({ address: e.target.value })}
+            onChange={(e) => handleAddressChange(e.target.value)}
+            onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
             placeholder="Es. Via Ciro Menotti 26, Modena"
+            autoComplete="off"
             className="w-full pl-12 pr-14 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#e3a692]/50 focus:border-[#e3a692] text-base transition-all custom-shadow"
           />
           <button
@@ -283,8 +341,28 @@ function Step1({ formData, update }: { formData: FormData, update: (u: Partial<F
             className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-[#e3a692] hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50"
             title="Usa la mia posizione attuale"
           >
-            {isLocating ? <Loader2 size={20} className="animate-spin" /> : <MapPin size={20} />}
+            {isLocating || isSearching
+              ? <Loader2 size={20} className="animate-spin" />
+              : <MapPin size={20} />}
           </button>
+
+          {/* Suggestions dropdown */}
+          {showSuggestions && (
+            <ul className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+              {suggestions.map((s, i) => (
+                <li key={i}>
+                  <button
+                    type="button"
+                    onMouseDown={() => handleSelectSuggestion(s)}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-gray-700 hover:bg-[#fdf8f6] hover:text-gray-900 transition-colors border-b border-gray-50 last:border-0"
+                  >
+                    <MapPin size={14} className="text-[#e3a692] shrink-0" />
+                    {s}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 

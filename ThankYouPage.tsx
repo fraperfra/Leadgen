@@ -73,15 +73,15 @@ export default function ThankYouPage({ firstName, onNewEvaluation, onDownloadChe
               {
                 icon: <span className="text-white text-xs font-bold">2</span>,
                 iconBg: 'bg-[#e3a692]',
-                title: 'Analisi del tuo immobile',
-                desc: 'Il nostro esperto sta valutando la tua proprietà.',
+                title: 'Analisi della tua richiesta',
+                desc: 'Il nostro consulente sta valutando la tua proprietà.',
                 status: 'active',
               },
               {
                 icon: <span className="text-gray-400 text-xs font-bold">3</span>,
                 iconBg: 'bg-gray-100',
                 title: 'Chiamata con il consulente',
-                desc: 'Ti presentiamo la valutazione personalizzata.',
+                desc: 'Analizziamo più nel dettaglio le tue richieste e fissiamo un appuntamento per visionare e valutare l\'immobile.',
                 status: 'pending',
               },
             ].map((step, i) => (

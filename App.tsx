@@ -1,6 +1,5 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import Clarity from '@microsoft/clarity';
 import { ChevronLeft, ChevronRight, Search, Home, Check, MapPin, Loader2, Users, TrendingUp, Download } from 'lucide-react';
 import ThankYouPage from './ThankYouPage';
 import DesignSystem from './DesignSystem';
@@ -29,9 +28,13 @@ declare global {
     dataLayer: any[];
     fbq: any;
     gtag: any;
-    clarity: any;
+    clarity: (method: string, ...args: any[]) => void;
   }
 }
+
+// Typed helpers for Clarity (avoids direct npm import — loaded via CDN snippet)
+const clarityEvent = (name: string) => window.clarity?.('event', name);
+const clarityTag = (key: string, value: string) => window.clarity?.('set', key, value);
 
 export default function App() {
   if (window.location.pathname === '/privacy-policy') {
@@ -74,7 +77,7 @@ export default function App() {
           step_name: stepName,
         });
       }
-      Clarity.event('form_abandon');
+      clarityEvent('form_abandon');
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
@@ -103,7 +106,7 @@ export default function App() {
       }
     }
     // Microsoft Clarity
-    Clarity.event(eventId);
+    clarityEvent(eventId);
   };
 
   const [formData, setFormData] = useState<FormData>({
@@ -133,7 +136,7 @@ export default function App() {
   const updateStepTracking = useCallback((newStep: number) => {
     const stepName = STEP_NAMES[newStep - 1] ?? `step_${newStep}`;
     window.location.hash = `step-${newStep}`;
-    Clarity.setTag('funnel_step', stepName);
+    clarityTag('funnel_step', stepName);
   }, []);
 
   const nextStep = useCallback(() => {
@@ -146,7 +149,7 @@ export default function App() {
           step_name: stepName,
         });
       }
-      Clarity.event(`step_${step}_completato`);
+      clarityEvent(`step_${step}_completato`);
       const newStep = step + 1;
       setStep(newStep);
       updateStepTracking(newStep);
@@ -167,7 +170,7 @@ export default function App() {
     if (!formStartedRef.current) {
       formStartedRef.current = true;
       if (window.gtag) window.gtag('event', 'form_start', { event_category: 'Funnel' });
-      Clarity.event('form_start');
+      clarityEvent('form_start');
     }
     setFormData(prev => ({ ...prev, ...updates }));
   };

@@ -1,8 +1,5 @@
 
 import React from 'react';
-import Clarity from '@microsoft/clarity';
-
-Clarity.init('vjqjucwmk3');
 import ReactDOM from 'react-dom/client';
 import App from './App';
 

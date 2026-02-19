@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Phone, Download, Check, ArrowRight, Star, RefreshCw } from 'lucide-react';
+import { Phone, Download, Check, ArrowRight, Star, RefreshCw, MapPin } from 'lucide-react';
 
 interface ThankYouPageProps {
   firstName: string;
@@ -112,9 +112,11 @@ export default function ThankYouPage({ firstName, onNewEvaluation, onDownloadChe
           </div>
         </div>
 
-        {/* ── Phone CTA ────────────────────────────────────── */}
+        {/* ── Phone + Maps CTA ─────────────────────────────── */}
         <div className="space-y-2">
-          <p className="text-xs text-gray-400 font-medium text-center">Hai fretta? Chiamaci tu direttamente</p>
+          <p className="text-xs text-gray-400 font-medium text-center">
+            Hai fretta? Chiamaci tu direttamente o vieni a trovarci in agenzia.
+          </p>
           <a
             href="tel:3274911031"
             className="flex items-center justify-between w-full px-5 py-4 bg-[#d97d6a] hover:bg-[#c66c5a] text-white rounded-2xl font-bold text-base shadow-lg shadow-[#d97d6a]/30 transition-all active:scale-[0.98]"
@@ -129,6 +131,21 @@ export default function ThankYouPage({ firstName, onNewEvaluation, onDownloadChe
               </div>
             </div>
             <ArrowRight size={20} className="opacity-70" />
+          </a>
+          <a
+            href="https://www.google.com/maps/search/Diba+servizi+immobiliari+reggio+emilia"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 w-full px-5 py-3.5 bg-white border border-gray-200 hover:border-[#e3a692] hover:bg-[#fdf8f6] rounded-2xl transition-all active:scale-[0.98]"
+          >
+            <div className="w-9 h-9 rounded-xl bg-[#fdf8f6] border border-[#e3a692]/30 flex items-center justify-center shrink-0">
+              <MapPin size={18} className="text-[#d97d6a]" />
+            </div>
+            <div className="text-left">
+              <p className="text-[11px] font-semibold text-gray-400 leading-none mb-0.5">Vieni in agenzia</p>
+              <p className="text-sm font-bold text-gray-800 leading-tight">Via Vittorio Veneto 3/D, Reggio Emilia 42121</p>
+            </div>
+            <ArrowRight size={16} className="ml-auto text-gray-300 shrink-0" />
           </a>
         </div>
 

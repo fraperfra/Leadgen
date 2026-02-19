@@ -2,6 +2,8 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Clarity from '@microsoft/clarity';
 import { ChevronLeft, ChevronRight, Search, Home, Check, MapPin, Loader2, Users, TrendingUp, Download } from 'lucide-react';
+import ThankYouPage from './ThankYouPage';
+import DesignSystem from './DesignSystem';
 import { FormData, PropertyType, EnergyClass, Condition, Motivation } from './types';
 import { PROPERTY_TYPES, ENERGY_CLASSES, CONDITION_OPTIONS, MOTIVATION_OPTIONS } from './constants';
 import { createClient } from '@supabase/supabase-js';
@@ -34,6 +36,9 @@ declare global {
 export default function App() {
   if (window.location.pathname === '/privacy-policy') {
     return <PrivacyPolicy />;
+  }
+  if (window.location.pathname === '/design-system') {
+    return <DesignSystem />;
   }
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -187,6 +192,16 @@ export default function App() {
       default: return null;
     }
   };
+
+  if (isSuccess) {
+    return (
+      <ThankYouPage
+        firstName={formData.firstName}
+        onNewEvaluation={() => { window.location.href = '/'; }}
+        onDownloadChecklist={() => trackEvent('checklist_download', { score: 10 })}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col max-w-lg mx-auto relative shadow-xl overflow-hidden">
@@ -902,43 +917,6 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
       setLoading(false);
     }
   };
-
-  if (success) {
-    return (
-      <div className="flex flex-col items-center justify-center text-center space-y-6 pt-12">
-        <h2 className="text-3xl font-black text-gray-900 tracking-tight">✅ Perfetto!</h2>
-        <p className="text-sm text-gray-600 max-w-xs mx-auto leading-relaxed">
-          Abbiamo ricevuto la tua richiesta.<br />
-          Ti chiameremo entro 30 minuti da questo numero
-        </p>
-        <a href="tel:3274911031" className="text-lg font-bold text-[#e3a692] hover:underline">
-          📞 327 491 1031
-        </a>
-        <p className="text-sm text-gray-500 max-w-xs mx-auto leading-relaxed">
-          Nel frattempo ti ho preparato una <strong>CheckList</strong> di tutta la documentazione che serve per <strong>Vendere velocemente</strong> il tuo immobile
-        </p>
-        <div className="pt-6 space-y-3 w-full max-w-xs mx-auto">
-          {/* Download Checklist Button */}
-          <a
-            href="/assets/Checklist.pdf"
-            download
-            onClick={() => trackEvent('checklist_download', { score: 10 })}
-            className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-[#d97d6a] text-white rounded-xl font-bold text-sm shadow-lg hover:bg-[#c66c5a] hover:scale-105 transition-all transform"
-          >
-            <Download size={18} />
-            Scarica Checklist Vendita 🎁
-          </a>
-
-          <button
-            onClick={() => { window.location.href = '/'; }}
-            className="w-full px-6 py-3 bg-white border-2 border-[#e3a692] text-[#e3a692] rounded-2xl font-bold shadow-lg hover:bg-orange-50 transition-all transform hover:scale-105"
-          >
-            Nuova Valutazione
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-5">

@@ -15,6 +15,17 @@ interface ThankYouPageProps {
   onDownloadChecklist: () => void;
 }
 
+// Orari lavorativi: Lun-Ven 9:00-13:00 e 15:00-19:00
+function isWithinBusinessHours(): boolean {
+  const now = new Date();
+  const day = now.getDay(); // 0=Dom, 1=Lun, ..., 5=Ven, 6=Sab
+  const minutes = now.getHours() * 60 + now.getMinutes();
+  const isWeekday = day >= 1 && day <= 5;
+  const isMorning   = minutes >= 9 * 60  && minutes <= 13 * 60; // 9:00–13:00
+  const isAfternoon = minutes >= 15 * 60 && minutes <= 19 * 60; // 15:00–19:00
+  return isWeekday && (isMorning || isAfternoon);
+}
+
 function trackThankYou(eventName: string, metaEvent?: string) {
   window.gtag?.('event', eventName, { event_category: 'Thank You Page' });
   if (metaEvent) window.fbq?.('track', metaEvent);
@@ -23,6 +34,7 @@ function trackThankYou(eventName: string, metaEvent?: string) {
 
 export default function ThankYouPage({ firstName, onNewEvaluation, onDownloadChecklist }: ThankYouPageProps) {
   const name = firstName.trim() || null;
+  const withinHours = isWithinBusinessHours();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -68,7 +80,11 @@ export default function ThankYouPage({ firstName, onNewEvaluation, onDownloadChe
             <span className="relative inline-flex rounded-full h-3 w-3 bg-[#d97d6a]" />
           </span>
           <p className="text-sm font-semibold text-gray-800">
-            Ti ricontattiamo <span className="text-[#d97d6a]">entro 30 minuti</span>
+            Ti ricontattiamo{' '}
+            {withinHours
+              ? <span className="text-[#d97d6a]">entro 30 minuti</span>
+              : <span className="text-[#d97d6a]">il prima possibile</span>
+            }
           </p>
         </div>
 

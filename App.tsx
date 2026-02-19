@@ -848,7 +848,6 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
               motivazione: formData.motivation,
               tipologia: formData.propertyType,
               condizione: formData.condition,
-              classe_energetica: formData.energyClass,
               superficie: Number(formData.surface) || 0,
               locali: parseInt(formData.rooms) || 0,
               bagni: parseInt(formData.bathrooms) || 0,

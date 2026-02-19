@@ -1,13 +1,6 @@
 import React, { useEffect } from 'react';
 import { Phone, Download, Check, ArrowRight, Star, RefreshCw, MapPin } from 'lucide-react';
 
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-    fbq?: (...args: any[]) => void;
-    clarity?: (method: string, ...args: any[]) => void;
-  }
-}
 
 interface ThankYouPageProps {
   firstName: string;

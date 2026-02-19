@@ -26,6 +26,7 @@ declare global {
     dataLayer: any[];
     fbq: any;
     gtag: any;
+    clarity: any;
   }
 }
 
@@ -53,12 +54,15 @@ export default function App() {
     }
     // Meta Pixel
     if (window.fbq) {
-      // Map custom events to standard Meta events where possible, or use CustomEvent
       if (eventId === 'valutazione_richiesta') {
         window.fbq('track', 'SubmitApplication');
       } else {
         window.fbq('trackCustom', eventId, { value });
       }
+    }
+    // Microsoft Clarity
+    if (window.clarity) {
+      window.clarity('event', eventId);
     }
   };
 
@@ -86,6 +90,17 @@ export default function App() {
 
   const nextStep = useCallback(() => {
     if (step < totalSteps + 1) {
+      // Track funnel step completion
+      if (window.gtag) {
+        window.gtag('event', 'funnel_step_complete', {
+          event_category: 'Funnel',
+          step_number: step,
+          step_name: ['indirizzo_tipologia', 'dimensioni', 'dettagli', 'motivazione'][step - 1] ?? `step_${step}`,
+        });
+      }
+      if (window.clarity) {
+        window.clarity('event', `step_${step}_completato`);
+      }
       setStep(prev => prev + 1);
       window.scrollTo(0, 0);
     }

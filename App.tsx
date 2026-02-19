@@ -856,7 +856,7 @@ function StepFinal({ formData, update, trackEvent, onSuccess }: { formData: Form
               ascensore: formData.hasElevator,
               extra: formData.extraSpaces,
               punteggio: leadScore,
-              lead_quality: leadCategory,
+              // lead_quality calcolato dal trigger auto_classify_lead_quality (HOT/WARM/COLD)
               landing_page_url: window.location.href,
               utm_source: utmSource,
               utm_medium: utmMedium,

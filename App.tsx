@@ -38,6 +38,42 @@ export default function App() {
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
   const totalSteps = 4;
+  const formStartedRef = useRef(false);
+  const isSuccessRef = useRef(false);
+  const stepRef = useRef(1);
+
+  useEffect(() => { stepRef.current = step; }, [step]);
+  useEffect(() => { isSuccessRef.current = isSuccess; }, [isSuccess]);
+
+  // Scroll input into view when keyboard opens on mobile
+  useEffect(() => {
+    const handleFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+      }
+    };
+    document.addEventListener('focusin', handleFocusIn);
+    return () => document.removeEventListener('focusin', handleFocusIn);
+  }, []);
+
+  // form_abandon: fires on page close/refresh if form was started but not submitted
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (!formStartedRef.current || isSuccessRef.current) return;
+      const stepName = ['indirizzo_tipologia', 'dimensioni', 'dettagli', 'motivazione', 'contatti'][stepRef.current - 1] ?? `step_${stepRef.current}`;
+      if (window.gtag) {
+        window.gtag('event', 'form_abandon', {
+          event_category: 'Funnel',
+          step_number: stepRef.current,
+          step_name: stepName,
+        });
+      }
+      Clarity.event('form_abandon');
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
 
   // Helper to track events
   const trackEvent = (eventId: string, value?: any) => {
@@ -123,6 +159,11 @@ export default function App() {
   }, [step, updateStepTracking]);
 
   const updateFormData = (updates: Partial<FormData>) => {
+    if (!formStartedRef.current) {
+      formStartedRef.current = true;
+      if (window.gtag) window.gtag('event', 'form_start', { event_category: 'Funnel' });
+      Clarity.event('form_start');
+    }
     setFormData(prev => ({ ...prev, ...updates }));
   };
 
@@ -190,7 +231,9 @@ export default function App() {
 
       {/* Main Content */}
       <main className="flex-1 px-6 pt-6 pb-32 overflow-y-auto">
-        {renderStep()}
+        <div key={step} className="step-fade">
+          {renderStep()}
+        </div>
       </main>
 
       {/* Navigation Footer */}

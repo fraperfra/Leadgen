@@ -4,8 +4,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Immobiliare DIBA - Valutazione Immobiliare</title>
+  <title>Valutazione Immobiliare Gratuita | Immobiliare DIBA</title>
+  <meta name="description" content="Scopri il valore della tua casa in 2 minuti. Valutazione immobiliare gratuita e senza impegno con gli esperti di Immobiliare DIBA. Rispondi a poche domande e ti ricontattiamo entro 30 minuti." />
   <link rel="icon" type="image/png" href="/assets/Favicon Immobiliare diba.png" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "name": "Immobiliare DIBA",
+    "description": "Valutazione immobiliare gratuita. Scopri il valore della tua casa con gli esperti di Immobiliare DIBA.",
+    "telephone": "+393274911031",
+    "email": "info@dibare.it",
+    "url": "https://valutazione.dibare.it",
+    "areaServed": {
+      "@type": "State",
+      "name": "Emilia-Romagna"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Valutazione Immobiliare",
+      "itemListElement": [{
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Valutazione Immobiliare Gratuita",
+          "description": "Valutazione gratuita del valore di mercato del tuo immobile"
+        },
+        "price": "0",
+        "priceCurrency": "EUR"
+      }]
+    }
+  }
+  </script>
 
   <!-- HubSpot Init -->
   <script>
@@ -50,6 +82,14 @@
 
     .custom-shadow {
       box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    @keyframes stepFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .step-fade {
+      animation: stepFadeIn 150ms ease-out both;
     }
   </style>
   <script type="importmap">

@@ -100,7 +100,7 @@ export default function App() {
     // Meta Pixel
     if (window.fbq) {
       if (eventId === 'valutazione_richiesta') {
-        window.fbq('track', 'SubmitApplication');
+        window.fbq('track', 'Lead');
       } else {
         window.fbq('trackCustom', eventId, { value });
       }

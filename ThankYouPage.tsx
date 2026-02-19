@@ -1,10 +1,24 @@
 import React, { useEffect } from 'react';
 import { Phone, Download, Check, ArrowRight, Star, RefreshCw, MapPin } from 'lucide-react';
 
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+    fbq?: (...args: any[]) => void;
+    clarity?: (method: string, ...args: any[]) => void;
+  }
+}
+
 interface ThankYouPageProps {
   firstName: string;
   onNewEvaluation: () => void;
   onDownloadChecklist: () => void;
+}
+
+function trackThankYou(eventName: string, metaEvent?: string) {
+  window.gtag?.('event', eventName, { event_category: 'Thank You Page' });
+  if (metaEvent) window.fbq?.('track', metaEvent);
+  window.clarity?.('event', eventName);
 }
 
 export default function ThankYouPage({ firstName, onNewEvaluation, onDownloadChecklist }: ThankYouPageProps) {
@@ -119,6 +133,7 @@ export default function ThankYouPage({ firstName, onNewEvaluation, onDownloadChe
           </p>
           <a
             href="tel:3274911031"
+            onClick={() => trackThankYou('phone_call_click', 'Contact')}
             className="flex items-center justify-between w-full px-5 py-4 bg-[#d97d6a] hover:bg-[#c66c5a] text-white rounded-2xl font-bold text-base shadow-lg shadow-[#d97d6a]/30 transition-all active:scale-[0.98]"
           >
             <div className="flex items-center gap-3">
@@ -136,6 +151,7 @@ export default function ThankYouPage({ firstName, onNewEvaluation, onDownloadChe
             href="https://www.google.com/maps/search/Diba+servizi+immobiliari+reggio+emilia"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackThankYou('maps_click', 'FindLocation')}
             className="flex items-center gap-3 w-full px-5 py-3.5 bg-white border border-gray-200 hover:border-[#e3a692] hover:bg-[#fdf8f6] rounded-2xl transition-all active:scale-[0.98]"
           >
             <div className="w-9 h-9 rounded-xl bg-[#fdf8f6] border border-[#e3a692]/30 flex items-center justify-center shrink-0">
